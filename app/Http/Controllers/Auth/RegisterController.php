@@ -90,10 +90,15 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
 
-        $user = $this->create($request->all());
+        event(new Registered($user = $this->create($request->all())));
 
-        $user->sendEmailVerificationNotification();
+        // print_r($user);
 
-        return redirect('/login');
+        // $user->sendEmailVerificationNotification();
+
+        // if ($user instanceof MustVerifyEmail) echo 'ye';
+        // else echo 'no';
+
+        // return redirect('/login');
     }
 }
