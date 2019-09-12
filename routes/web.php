@@ -21,4 +21,6 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/test', 'TestController@test')->middleware('verified');
+Route::resource('wallets', 'WalletController');
+
+Route::get('/test', 'TestController@test');
