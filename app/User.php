@@ -18,7 +18,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'firstName', 'lastName', 'dob', 'gender'
+        'username', 'email', 'password', 'firstName', 'lastName', 'dob', 'gender', 'avatar'
     ];
 
     /**
@@ -41,8 +41,18 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $table='users';
 
-    // public function sendEmailVerificationNotification()
-    // {
-    //     $this->notify(new App\Http\Controllers\Auth\EmailVerification);
-    // }
+    public function wallet()
+    {
+        return $this->hasMany('App\Wallet');
+    }
+
+    public function category()
+    {
+        return $this->hasMany('App\Category');
+    }
+
+    public function transaction()
+    {
+        return $this->hasMany('App\Transaction');
+    }
 }
