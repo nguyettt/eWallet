@@ -100,4 +100,12 @@ return [
         ],
     ],
 
+    /**
+     *  Email verification
+     * 
+     *  Specify time limit for the email verification
+     */
+    'verification' => [
+        'expire' => 1440,
+    ],
 ];
