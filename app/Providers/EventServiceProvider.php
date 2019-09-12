@@ -3,9 +3,13 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+// use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Events\UserRegistered;
+use App\Notifications\SendEmailVerificationNotification;
+use App\Listeners\CreateBaseCategories;
+use App\Listeners\CreateMainWallet;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,9 +19,11 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class => [
+        UserRegistered::class => [
+            CreateBaseCategories::class,
+            CreateMainWallet::class,
             SendEmailVerificationNotification::class,
-        ],
+        ]
     ];
 
     /**
