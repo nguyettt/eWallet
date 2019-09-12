@@ -7,8 +7,10 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
+use App\Http\Requests\RegisterFormRequest;
 use Illuminate\Auth\Events\Registered;
+use App\Events\UserRegistered;
+use App\Listeners\CreateBaseCategories;
 
 class RegisterController extends Controller
 {
@@ -49,25 +51,6 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'username' => ['required', 'unique:users', 'min:4', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'min:8', 'confirmed'],
-            'firstName' => ['required'],
-            'lastName' => ['required'],
-            'dob' => ['required', 'date'],
-            'gender' => ['required']
-        ]);
-    }
-
-    /**
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
@@ -82,15 +65,15 @@ class RegisterController extends Controller
             'firstName' => $data['firstName'],
             'lastName' => $data['lastName'],
             'dob' => $data['dob'],
-            'gender' => $data['gender']
+            'gender' => $data['gender'],
+            'avatar' => 'storage/user_avatar/default_avatar.png'
         ]);
     }
 
-    public function register(Request $request)
+    public function register(RegisterFormRequest $request)
     {
-        $this->validator($request->all())->validate();
 
-        event(new Registered($user = $this->create($request->all())));
+        event(new UserRegistered($user = $this->create($request->all())));
 
         // print_r($user);
 
@@ -99,6 +82,6 @@ class RegisterController extends Controller
         // if ($user instanceof MustVerifyEmail) echo 'ye';
         // else echo 'no';
 
-        // return redirect('/login');
+        return redirect('/login');
     }
 }
