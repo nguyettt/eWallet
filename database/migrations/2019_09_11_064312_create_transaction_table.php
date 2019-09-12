@@ -21,9 +21,18 @@ class CreateTransactionTable extends Migration
             $table->string('details');
             $table->double('amount');
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('wallet_id')->references('id')->on('wallets');
-            $table->foreign('cat_id')->references('id')->on('categories');
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+            $table->foreign('wallet_id')
+                  ->references('id')
+                  ->on('wallets')
+                  ->onDelete('cascade');
+            $table->foreign('cat_id')
+                  ->references('id')
+                  ->on('categories')
+                  ->onDelete('cascade');
         });
     }
 
