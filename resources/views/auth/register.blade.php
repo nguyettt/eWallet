@@ -110,8 +110,8 @@
                                 {{-- <input id="gender" type="text" class="form-control @error('lastName') is-invalid @enderror" name="lastName" required autocomplete="lastName"> --}}
                                 <select id="gender" name="gender" class="form-control @error('gender') is-invalid @enderror" value="{{ old('gender') }}" required>
                                     <option value="" disabled hidden selected>Select</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
+                                    <option value="male" {{ old('gender')=='male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender')=='female' ? 'selected' : '' }}>Female</option>
                                 </select>
 
                                 @error('gender')
