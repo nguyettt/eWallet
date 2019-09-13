@@ -72,15 +72,7 @@ class RegisterController extends Controller
 
     public function register(RegisterFormRequest $request)
     {
-
         event(new UserRegistered($user = $this->create($request->all())));
-
-        // print_r($user);
-
-        // $user->sendEmailVerificationNotification();
-
-        // if ($user instanceof MustVerifyEmail) echo 'ye';
-        // else echo 'no';
 
         return redirect('/login');
     }
