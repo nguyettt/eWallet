@@ -3,19 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Wallet;
 
 class WalletController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -45,7 +36,14 @@ class WalletController extends Controller
      */
     public function show($id)
     {
-        //
+        session(['wallet' => $id]);
+        if($id != 'all') {
+            $wallet = Wallet::findOrFail($id);
+        } else {
+            $wallet = new Wallet;
+            $wallet->name = 'All';
+        }        
+        return view('wallet.show', compact('wallet'));
     }
 
     /**
