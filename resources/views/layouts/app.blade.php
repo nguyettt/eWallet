@@ -81,10 +81,10 @@
         @auth
         @if (auth()->user()->hasVerifiedEmail())
             @include('layouts.nav')
-            <div class="page-content p-5" id="content">
+            <div class="page-content p-5 active" id="content">
                 <!-- Toggle button -->
                 <button id="sidebarCollapse" type="button" class="btn btn-light bg-white rounded-pill shadow-sm px-4 mb-4"><i
-                        class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Toggle</small></button>
+                        class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Menu</small></button>
                 @yield('content')
             </div>
         @else

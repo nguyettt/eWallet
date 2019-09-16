@@ -1,11 +1,11 @@
-<div class="vertical-nav bg-white overflow-auto" id="sidebar">
+<div class="vertical-nav bg-white overflow-auto active" id="sidebar">
     <div class="py-4 px-3 mb-4 bg-light">
         <div class="media d-flex align-items-center"><img
-                src="{{ auth()->user()->avatar }}" alt="..." width="65"
+                src="{{ $user->avatar }}" alt="..." width="65"
                 class="mr-3 rounded-circle img-thumbnail shadow-sm">
             <div class="media-body">
-                <h4 class="m-0">{{ auth()->user()->username }}</h4>
-                <p class="font-weight-light text-muted mb-0">{{ auth()->user()->email }}</p>
+                <h4 class="m-0">{{ $user->username }}</h4>
+                <p class="font-weight-light text-muted mb-0">{{ $user->email }}</p>
             </div>
         </div>
     </div>
@@ -21,17 +21,13 @@
 
     <div id="wallet" class="collapse show">
         <ul class="nav flex-column bg-white mb-0">
-            <?php 
-                use App\Wallet;
-                $wallets = Wallet::where('user_id', auth()->user()->id)->get();
-            ?>
             <li class="nav-item">
                 <a href="wallet/all" class="nav-link text-dark font-italic bg-light">
                     <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
                     All
                 </a>
             </li>
-            @foreach ($wallets as $__wallet)
+            @foreach ($wallet as $__wallet)
                 <li class="nav-item">
                     <a href="wallet/{{ $__wallet->id }}" class="nav-link text-dark font-italic bg-light">
                         <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
@@ -60,28 +56,7 @@
                     Income
                 </a>
                 <div id="income" class="collapse">
-                    <ul class="nav flex-column bg-white mb-0">
-                        <li class="nav-item">
-                            <?php
-                                use App\Category;
-                                
-                                $wallet_id = session('wallet');
-                                $categories = Category::where('user_id', auth()->user()->id)->get(); 
-                            ?>
-                            @foreach ($categories as $cat)
-                                @if ($cat->type == 'income')
-                                    <a href="wallet/{{ $wallet_id }}/category/{{ $cat->id }}" class="nav-link text-dark font-italic bg-light">
-                                        <i class="fas fa-circle ml-3 mr-3 text-success fa-fw"></i>
-                                        {{ $cat->name }}
-                                    </a>
-                                @endif
-                            @endforeach
-                            <a href="wallet/{{ $wallet_id }}/category/create" class="nav-link text-dark font-italic bg-light">
-                                <i class="fas fa-plus-circle ml-3 mr-3 text-success fa-fw"></i>
-                                Add new category
-                            </a>                     
-                        </li>
-                    </ul>
+                    {!! $income !!}
                 </div>
             </li>
             <li class="nav-item">
@@ -90,24 +65,7 @@
                     Outcome
                 </a>
                 <div id="outcome" class="collapse">
-                    <ul class="nav flex-column bg-white mb-0">
-                        @foreach ($categories as $cat)
-                            @if ($cat->type == 'outcome')
-                                <li class="nav-item">
-                                    <a href="wallet/{{ $wallet_id }}/category/{{ $cat->id }}" class="nav-link text-dark font-italic bg-light">
-                                        <i class="fas fa-circle ml-3 mr-3 text-danger fa-fw"></i>
-                                        {{ $cat->name }}
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
-                        <li class="nav-item">
-                            <a href="wallet/create" class="nav-link text-dark font-italic bg-light">
-                                <i class="fas fa-plus-circle ml-3 mr-3 text-primary fa-fw"></i>
-                                Add new category
-                            </a>
-                        </li>
-                    </ul>
+                    {!! $outcome !!}
                 </div>
             </li>
         </ul>

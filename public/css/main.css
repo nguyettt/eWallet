@@ -1,6 +1,6 @@
 .vertical-nav {
-    min-width: 20rem;
-    width: 20rem;
+    min-width: 50%;
+    width: 50%;
     height: 100vh;
     position: fixed;
     top: 0;
@@ -10,15 +10,15 @@
 }
 
 .page-content {
-    width: calc(100% - 20rem);
-    margin-left: 20rem;
+    width: calc(100% - 50%);
+    margin-left: 50%;
     transition: all 0.4s;
 }
 
 /* for toggle behavior */
 
 #sidebar.active {
-    margin-left: -20rem;
+    margin-left: -50%;
 }
 
 #content.active {
@@ -28,7 +28,7 @@
 
 @media (max-width: 768px) {
     #sidebar {
-        margin-left: -20rem;
+        margin-left: -50%;
     }
 
     #sidebar.active {
@@ -41,8 +41,8 @@
     }
 
     #content.active {
-        margin-left: 20rem;
-        width: calc(100% - 20rem);
+        margin-left: 50%;
+        width: calc(100% - 50%);
     }
 }
 
@@ -65,4 +65,8 @@ body {
 
 .text-gray {
     color: #aaa;
+}
+
+.navv {
+    list-style-type: none;
 }

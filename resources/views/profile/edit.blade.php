@@ -5,8 +5,13 @@
 @endsection
 
 @section('content')
-    <div class="container">
-        <div class="card bg-light p-5 col-lg-8 offset-lg-2">
+<div class="container">
+    <div class="card bg-light p-5 col-lg-8 offset-lg-2">
+        <div class="card-header row justify-content-center">
+            <h5 class="font-weight-bold">{{ __('Edit Profile') }}</h5>
+        </div>
+
+        <div class="card-body">
             <form method="POST" action="/profile/edit" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -142,7 +147,8 @@
                         </button>
                     </div>
                 </div>
-            </form>
+            </form> 
         </div>
     </div>
+</div>
 @endsection

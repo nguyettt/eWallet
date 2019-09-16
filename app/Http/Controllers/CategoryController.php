@@ -3,17 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\WalletFormRequest;
+use App\Http\Requests\CategoryFormRequest;
 use App\Wallet;
-use App\Repository\WalletEloquentRepository;
+use App\Category;
+use App\Repository\CategoryEloquentRepository;
 
-class WalletController extends Controller
+class CategoryController extends Controller
 {
-    protected $walletEloquentRepository;
 
-    public function __construct(WalletEloquentRepository $walletEloquentRepository)
+    protected $catEloqentRepository;
+
+    public function __construct(CategoryEloquentRepository $catEloqentRepository)
     {
-        $this->walletEloquentRepository = $walletEloquentRepository;
+        $this->catEloqentRepository = $catEloqentRepository;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
     }
 
     /**
@@ -21,9 +33,10 @@ class WalletController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        return view('wallet.create');
+    public function create($wallet_id)
+    {   
+        $cat = Category::where('user_id', auth()->user()->id)->get();
+        return view('cat.create', compact('wallet_id', 'cat'));
     }
 
     /**
@@ -32,12 +45,11 @@ class WalletController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(WalletFormRequest $request)
+    public function store(CategoryFormRequest $request)
     {
         $data = $request->all();
         $data['user_id'] = auth()->user()->id;
-        $data['balance'] = 0;
-        $this->walletEloquentRepository->create($data);
+        $this->catEloqentRepository->create($data);
         return redirect('/home');
     }
 
@@ -47,16 +59,9 @@ class WalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($wallet_id, $id)
     {
-        session(['wallet' => $id]);
-        if($id != 'all') {
-            $wallet = Wallet::findOrFail($id);
-        } else {
-            $wallet = new Wallet;
-            $wallet->name = 'All';
-        }        
-        return view('wallet.show', compact('wallet'));
+        echo $wallet_id.' '.$id;
     }
 
     /**

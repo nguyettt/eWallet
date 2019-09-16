@@ -50,18 +50,49 @@ Route::middleware('verified')->group(function () {
 
     Route::group(['prefix' => 'wallet', 'as' => 'wallet.'], function () {
         
-        Route::get('/{id}', 'WalletController@show')->name('show');
-
         Route::get('/create', 'WalletController@create')->name('create');
 
-        Route::post('/create', 'WalletController@store')->name('store');
+        Route::post('/', 'WalletController@store')->name('store');
 
-        Route::get('/edit', 'WalletController@edit')->name('edit');
+        Route::get('/{id}', 'WalletController@show')->name('show');
 
-        Route::put('/edit', 'WalletController@update')->name('update');
+        Route::get('/{id}/edit', 'WalletController@edit')->name('edit');
+
+        Route::put('/{id}', 'WalletController@update')->name('update');
 
         Route::delete('/{id}', 'WalletController@destroy')->name('delete');
 
+    });
+
+    Route::group(['prefix' => 'wallet/{wallet_id}/cat', 'as' => 'cat.'], function ($wallet_id) {
+
+        Route::get('create', 'CategoryController@create')->name('create');
+
+        Route::post('/', 'CategoryController@store')->name('store');
+
+        Route::get('/{id}', 'CategoryController@show')->name('show');
+
+        Route::get('/{id}/edit', 'CategoryController@edit')->name('edit');
+
+        Route::put('/{id}', 'CategoryController@update')->name('update');
+
+        Route::delete('/{id}', 'CategoryController@destroy')->name('delete');
+
+    });
+
+    Route::group(['prefix' => 'transaction', 'as' => 'transaction.'], function () {
+
+        Route::get('create', 'TransactionController@create')->name('create');
+
+        Route::post('/', 'TransactionController@store')->name('store');
+
+        Route::get('/{id}', 'TransactionController@show')->name('show');
+
+        Route::get('/{id}/edit', 'TransactionController@edit')->name('edit');
+
+        Route::put('/{id}', 'TransactionController@update')->name('update');
+
+        Route::delete('/{id}', 'TransactionController@destroy')->name('delete');
     });
 
     Route::resource('wallets', 'WalletController');
