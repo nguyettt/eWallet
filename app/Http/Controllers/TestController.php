@@ -7,81 +7,58 @@ use Mail;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Category;
+use App\Transaction;
+use App\Repository\WalletEloquentRepository;
+use App\Repository\CategoryEloquentRepository;
+use App\Repository\UserEloquentRepository;
+use App\Repository\TransactionEloquentRepository;
+use App\Http\Controllers\WalletController;
 
 class TestController extends Controller
 {
-    public function __construct()
+    protected $walletRepo;
+
+    protected $catRepo;
+
+    protected $transactionRepo;
+
+    public function __construct(
+        TransactionEloquentRepository $transactionRepo,
+        CategoryEloquentRepository $catRepo,
+        WalletEloquentRepository $walletRepo
+    )
     {
-        // $this->middleware('auth');
+        $this->walletRepo = $walletRepo;
+        $this->catRepo = $catRepo;
+        $this->transactionRepo = $transactionRepo;
     }
 
     public function test(Request $request)
     {
-        $cat = Category::where('user_id', auth()->user()->id)->get();
-        $data = $cat->all();
-        $tree = $this->buildTree($data);
-        // print_r ($this->printTree($tree));
-        foreach ($tree as $cat) {
-            if ($cat['type'] == 'income') {
-                $income_data = $cat['child'];
-            } else {
-                $outcome_data = $cat['child'];
-            }
-        }
-        // $test = array(
-        //     0 => array('name' => 'abc'),
-        //     1 => array('name' => 'def'),
-        //     2 => array(
-        //         'name' => 'ghi',
-        //         'child' => array(
-        //             0 => array('name' => '123'),
-        //             1 => array('name' => '456')
-        //         )
-        //     )
-        // );
-        // $menu = $this->printTree($tree);
-        $income = $this->printTree($income_data);
-        $outcome = $this->printTree($outcome_data);
-        // echo User::all()->count();
-        return view('test', compact('income', 'outcome'));
-    }
+        // $wallet = $this->walletRepo->findWithRelationship(1, ['transaction']);
+        // $wallet = $this->walletRepo->find(1);
+        // $trans = $wallet->transaction()->get();
+        // foreach ($trans as $item) {
+        //     echo $item['amount'].'<br>';
+        // }
 
-    public function buildTree($category, $parent_id = 0)
-    {
-        $branch = array();
-        foreach ($category as $cat) {
-            if ($cat['parent_id'] == $parent_id) {
-                $child = $this->buildTree($category, $cat['id']);
-                if ($child) {
-                    $cat['child'] = $child;
-                }
-                $branch[] = $cat;
-            }
-        }
-        return $branch;
-    }
+        // $trans = $this->transactionRepo->getAll();
+        // $in = $trans->where('benefit_wallet', '<>', null)->all();
+        // // echo count($in);
+        // foreach ($in as $item) {
+        //     // echo $in['amount'];
+        //     // print_r($item);
+        //     echo $item['amount'];
+        // }
 
-    public function printTree($tree)
-    {
-        $menu = "<ul class='navv flex-column bg-white mb-0'>\n";
-        foreach ($tree as $item) {
-            if (isset($item['child'])) {
-                $menu .= "<li class='nav-item'>\n
-                            <a href='#' class='nav-link text-dark font-italic bg-light'>
-                                <i class='fas fa-circle ml-3 mr-3 text-success fa-fw'></i>\n
-                                ".$item['name']."\n
-                            </a>\n";
-                $sub = $this->printTree($item['child']);
-                $menu .= $sub."</li>\n";
-            } else {
-                $menu .= "<li class='nav-item'>\n
-                            <a href='#' class='nav-link text-dark font-italic bg-light'>
-                                <i class='fas fa-circle ml-3 mr-3 text-success fa-fw'></i>\n
-                                ".$item['name']."\n
-                            </a>\n
-                        </li>\n";
-            }
-        }
-        return $menu."</ul>\n";
+        $wallet = $this->walletRepo->find(2);
+        $transaction = $wallet->transaction()
+                              ->whereMonth('created_at', 9)
+                              ->get();
+        $in = $transaction->where('benefit_wallet', '<>', null)->get();
+        print_r($in);
+        // foreach ($transaction as $item) {
+        //     echo $item['amount'].'<br>';
+        // }
     }
 }
