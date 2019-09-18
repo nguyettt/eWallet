@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer('layouts.nav', 'App\Http\ViewComposers\NavComposer');
+        View::composer([
+            'layouts.nav',
+            'cat.create',
+            'transaction.create',
+        ], 'App\Http\ViewComposers\NavComposer');
     }
 }
