@@ -29,7 +29,7 @@ class CategoryFormRequest extends FormRequest
         return [
             'type' => [
                 'required',
-                Rule::in(['income', 'outcome']),
+                Rule::in([1, 2, 3]),
             ],
             'name' => [
                 'required',
