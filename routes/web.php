@@ -30,8 +30,6 @@ Route::middleware('verified')->group(function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
 
-    // Route::resource('profile', 'UserController')->only(['show', 'edit', 'update', 'destroy']);
-
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
 
         Route::get('/', 'UserController@show')->name('show');
@@ -64,7 +62,7 @@ Route::middleware('verified')->group(function () {
 
     });
 
-    Route::group(['prefix' => 'wallet/{wallet_id}/cat', 'as' => 'cat.'], function ($wallet_id) {
+    Route::group(['prefix' => 'cat', 'as' => 'cat.'], function () {
 
         Route::get('create', 'CategoryController@create')->name('create');
 
@@ -95,8 +93,6 @@ Route::middleware('verified')->group(function () {
         Route::delete('/{id}', 'TransactionController@destroy')->name('delete');
     });
 
-    Route::resource('wallets', 'WalletController');
-
-    Route::get('/test', 'TestController@test');
+    Route::get('/test', 'TestController@test')->name('test');
 
 });
