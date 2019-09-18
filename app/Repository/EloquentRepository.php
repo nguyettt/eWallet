@@ -50,13 +50,21 @@ abstract class EloquentRepository implements RepositoryInterface {
     }
 
     /**
+     * Ready the query
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function query()
+    {
+        return $this->_model->where('user_id', auth()->user()->id);
+    }
+
+    /**
      * Get All
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function getAll($page)
+    public function getAll()
     {
-        DB::statement(DB::raw("set @row:=($page - 1) * 20"));
-        return $this->_model->select(DB::raw('*, @row:=@row+1 as no'));
+        return $this->query()->get();
     }
 
     /**
@@ -88,6 +96,23 @@ abstract class EloquentRepository implements RepositoryInterface {
 
         return $result;
     }
+
+    public function findWithRelationship($id, array $relationship = array())
+    {
+        $result = $this->make($relationship);
+
+        return $result->find($id); 
+    }
+
+    /**  
+    * Make a new instance of the entity to query on  
+    *  
+    * @param array $with  
+    */  
+    public function make(array $with = array())  
+    {  
+    return $this->_model->with($with);  
+    }  
 
     /**
      * Create

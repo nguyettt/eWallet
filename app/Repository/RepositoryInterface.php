@@ -8,7 +8,7 @@ interface RepositoryInterface {
      * Get all
      * @return mixed
      */
-    public function getAll($page);
+    public function getAll();
 
     /**
      * Get one
