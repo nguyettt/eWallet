@@ -40,9 +40,9 @@
 </head>
 
 <body>
-    <div id="app">
+    <div class="pt-5" id="app">
         @guest
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -81,10 +81,19 @@
         @auth
         @if (auth()->user()->hasVerifiedEmail())
             @include('layouts.nav')
-            <div class="page-content p-5 active" id="content">
+            <div class="page-content p-5 fixed-top" id="content">
                 <!-- Toggle button -->
                 <button id="sidebarCollapse" type="button" class="btn btn-light bg-white rounded-pill shadow-sm px-4 mb-4"><i
                         class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Menu</small></button>
+            </div>
+            <div class="row page-content p-5 fixed-bottom justify-content-center" id="content" 
+                @if (!in_array(Route::currentRouteName(), ['home', 'wallet.show', 'cat.show'])) 
+                    style="display: none" 
+                @endif
+            >      
+                <a href="transaction/create" id="add" class="btn btn-primary btn-circle"><i class="fas fa-plus"></i></a>
+            </div>
+            <div class="page-content p-5" id="content">
                 @yield('content')
             </div>
         @else
