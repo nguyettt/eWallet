@@ -33,9 +33,13 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($wallet_id)
+    public function create()
     {   
         $cat = Category::where('user_id', auth()->user()->id)->get();
+        $income_id = $cat->where('name', 'Income')->first()->id;
+        $outcome_id = $cat->where('name', 'Expense')->first()->id;
+        $transfer_id = $cat->where('name', 'Transfer to another wallet')->first()->id;
+        $cat = $cat->whereIn('parent_id', [0, $income_id, $outcome_id, $transfer_id]);
         return view('cat.create', compact('wallet_id', 'cat'));
     }
 
@@ -59,9 +63,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($wallet_id, $id)
+    public function show($id)
     {
-        echo $wallet_id.' '.$id;
+        echo $id;
     }
 
     /**
