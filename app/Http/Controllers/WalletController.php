@@ -6,14 +6,25 @@ use Illuminate\Http\Request;
 use App\Http\Requests\WalletFormRequest;
 use App\Wallet;
 use App\Repository\WalletEloquentRepository;
+use App\Transaction;
+use App\Repository\TransactionEloquentRepository;
+use App\Repository\CategoryEloquentRepository;
 
 class WalletController extends Controller
 {
-    protected $walletEloquentRepository;
+    protected $walletRepo;
 
-    public function __construct(WalletEloquentRepository $walletEloquentRepository)
+    protected $transactionRepo;
+
+    public function __construct(
+        WalletEloquentRepository $walletRepo,
+        TransactionEloquentRepository $transactionRepo,
+        CategoryEloquentRepository $catRepo
+    )
     {
-        $this->walletEloquentRepository = $walletEloquentRepository;
+        $this->walletRepo = $walletRepo;
+        $this->transactionRepo = $transactionRepo;
+        $this->catRepo = $catRepo;
     }
 
     /**
@@ -37,7 +48,7 @@ class WalletController extends Controller
         $data = $request->all();
         $data['user_id'] = auth()->user()->id;
         $data['balance'] = 0;
-        $this->walletEloquentRepository->create($data);
+        $this->walletRepo->create($data);
         return redirect('/home');
     }
 
@@ -47,16 +58,49 @@ class WalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        session(['wallet' => $id]);
-        if($id != 'all') {
-            $wallet = Wallet::findOrFail($id);
+    public function show($id, Request $request)
+    {   
+        $inflow = 0;
+        $outflow = 0;
+
+        if ($request->time) {
+            $time = $request->time;
         } else {
-            $wallet = new Wallet;
-            $wallet->name = 'All';
-        }        
-        return view('wallet.show', compact('wallet'));
+            $time = date('m');
+        }
+
+        if ($id == 'all') {
+            $wallet['name'] = 'All';
+            $transaction = $this->transactionRepo->query()
+                                                 ->whereMonth('created_at', $time)
+                                                 ->where('benefit_wallet', null)
+                                                 ->get();
+        } else {
+            $wallet = $this->walletRepo->find($id);
+            $transaction = $wallet->transaction()
+                                  ->whereMonth('created_at', $time)
+                                  ->get();
+            $transfer_in = $this->transactionRepo->query()
+                                                 ->whereMonth('created_at', $time)
+                                                 ->where('benefit_wallet', $id)
+                                                 ->get();
+
+            foreach ($transfer_in as $item) {
+                $inflow += $item['amount'];
+            }
+        }
+
+        $cat_array = $this->cat_array();
+
+        foreach ($transaction as $item) {
+            if (in_array($item['cat_id'], $cat_array['income'])) {
+                $inflow += $item['amount'];
+            } else {
+                $outflow += $item['amount'];
+            }
+        }
+
+        return view('wallet.show', compact('wallet', 'transaction', 'inflow', 'outflow'));
     }
 
     /**
@@ -91,5 +135,40 @@ class WalletController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Generate cat_type_id array
+     * @return array
+     */
+    public function cat_array()
+    {
+        $cat = $this->catRepo->getAll();
+        $array = array();
+        $income = array();
+        $outcome = array();
+
+        foreach ($cat as $item) {
+            switch ($item['type']) {
+                case 1: {
+                    $income[] = $item['id'];
+                    break;
+                }
+                case 2: 
+                case 3: {
+                    $outcome[] = $item['id'];
+                    break;
+                }
+            }
+        }
+
+        $array['income'] = $income;
+        $array['outcome'] = $outcome;
+        return $array;
+    }
+
+    public function buildListTransaction($id)
+    {
+        // $transaction = $this->transactionRepo->
     }
 }
