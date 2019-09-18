@@ -23,7 +23,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        session(['wallet' => 'all']);
         return view('home');
     }
 }
