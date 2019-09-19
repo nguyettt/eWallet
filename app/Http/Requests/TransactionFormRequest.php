@@ -26,12 +26,11 @@ class TransactionFormRequest extends FormRequest
      */
     public function rules()
     {   
-        $balance = Wallet::find($this->id);
         return [
             'amount' => [
                 'required',
                 'numeric',
-                'gte:0',
+                'gt:0',
             ],
             'wallet_id' => [
                 'required',
