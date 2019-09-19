@@ -65,42 +65,74 @@ class WalletController extends Controller
 
         if ($request->time) {
             $time = $request->time;
-        } else {
-            $time = date('m');
-        }
-
-        if ($id == 'all') {
-            $wallet['name'] = 'All';
-            $transaction = $this->transactionRepo->query()
-                                                 ->whereMonth('created_at', $time)
-                                                 ->where('benefit_wallet', null)
-                                                 ->get();
-        } else {
-            $wallet = $this->walletRepo->find($id);
-            $transaction = $wallet->transaction()
-                                  ->whereMonth('created_at', $time)
-                                  ->get();
-            $transfer_in = $this->transactionRepo->query()
-                                                 ->whereMonth('created_at', $time)
-                                                 ->where('benefit_wallet', $id)
-                                                 ->get();
-
-            foreach ($transfer_in as $item) {
-                $inflow += $item['amount'];
+            if (!preg_match('/^[0-9]{1,2}\\-[0-9]{4}$/', $time)) {
+                return abort(404);
             }
+            $month = explode('-', $time)[0];
+            $year = explode('-', $time)[1];
+        } else {
+            $month = date('m');
+            $year = date('Y');
         }
+        
+        $time = $month.' - '.$year;
 
-        $cat_array = $this->cat_array();
+        $wallet = $this->walletRepo->find($id);
+
+        $transaction = $this->transactionRepo->query()
+                                            ->whereMonth('created_at', $month)
+                                            ->whereYear('created_at', $year)
+                                            ->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
+                                            ->orderBy('created_at', 'asc')
+                                            ->get();
+
+        $cat_id_array = $this->cat_array();
+
+        $records = array();
 
         foreach ($transaction as $item) {
-            if (in_array($item['cat_id'], $cat_array['income'])) {
-                $inflow += $item['amount'];
+            if (in_array($item->cat_id, $cat_id_array['income']) || $item->benefit_wallet == $id) {
+                $inflow += $item->amount;
             } else {
-                $outflow += $item['amount'];
+                $outflow += $item->amount;
             }
+
+            $date = date('m/d/Y', strtotime($item['created_at']));
+            $records[$date][] = $item;
         }
 
-        return view('wallet.show', compact('wallet', 'transaction', 'inflow', 'outflow'));
+        foreach ($records as $date => $item) {
+            $sum = 0;
+            foreach ($item as $key => $value) {
+                if (in_array($value->cat_id, $cat_id_array['income']) || $value->benefit_wallet == $id) {
+                    $sum += $value->amount;
+                    $records[$date][$key]['type'] = 1;
+                    if ($value->benefit_wallet == $id) {
+                        $from_wallet = $this->walletRepo->find($value->wallet_id)->name;
+                        $records[$date][$key]['details'] = 'Transfer from '.$from_wallet;
+                    }
+                } else {
+                    $sum = $sum - $value->amount;
+                    $records[$date][$key]['type'] = 2;
+                }
+                $records[$date][$key]['cat_name'] = $value->category->name;
+                $records[$date][$key] = $value->toArray();
+            }
+            $records[$date]['sum'] = $sum;
+        }
+
+        if ($month == 1) {
+            $next = '02-'.$year;
+            $prev = '12-'.($year - 1);
+        } elseif ($month > 1 && $month < 12) {
+            $next = str_pad(($month + 1), 2, '0', STR_PAD_LEFT).'-'.$year;
+            $prev = str_pad(($month - 1), 2, '0', STR_PAD_LEFT).'-'.$year;
+        } else {
+            $next = '01-'.($year + 1);
+            $prev = '11-'.$year;
+        }
+
+        return view('wallet.show', compact('wallet', 'transaction', 'inflow', 'outflow', 'records', 'time', 'next', 'prev'));
     }
 
     /**
