@@ -23,10 +23,15 @@
         <ul class="nav flex-column bg-white mb-0">
             @foreach ($wallet as $item)
                 <li class="nav-item">
-                    <a href="wallet/{{ $item->id }}" class="nav-link text-dark font-italic">
-                        <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
-                        {{ $item->name }}
-                    </a>
+                    <div class="nav-link">
+                        <a href="wallet/{{ $item->id }}" class="text-dark font-italic">
+                            <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
+                            {{ $item->name }}
+                        </a>
+                        <a href="wallet/{{ $item->id }}/edit">
+                            <i class="fas fa-edit mr-3 text-primary fa-fw float-right" style="cursor:pointer"></i>
+                        </a>
+                    </div>
                 </li>
             @endforeach
             <li class="nav-item">

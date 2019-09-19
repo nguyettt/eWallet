@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\WalletFormRequest;
+use App\Http\Requests\WalletEditFormRequest;
 use App\Wallet;
 use App\Repository\WalletEloquentRepository;
 use App\Transaction;
@@ -142,8 +143,9 @@ class WalletController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        //
+    {   
+        $wallet = $this->walletRepo->find($id);
+        return view('wallet.edit', compact('wallet'));
     }
 
     /**
@@ -153,9 +155,11 @@ class WalletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(WalletEditFormRequest $request, $id)
     {
-        //
+        $data = $request->all();
+        $this->walletRepo->update($id, $data);
+        return redirect('/wallet/'.$id);
     }
 
     /**
