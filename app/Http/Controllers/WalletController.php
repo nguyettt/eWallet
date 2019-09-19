@@ -83,6 +83,7 @@ class WalletController extends Controller
         $transaction = $this->transactionRepo->query()
                                             ->whereMonth('created_at', $month)
                                             ->whereYear('created_at', $year)
+                                            ->where('delete_flag', null)
                                             ->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
                                             ->orderBy('created_at', 'asc')
                                             ->get();
