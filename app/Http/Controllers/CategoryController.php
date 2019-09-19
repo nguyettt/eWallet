@@ -11,11 +11,11 @@ use App\Repository\CategoryEloquentRepository;
 class CategoryController extends Controller
 {
 
-    protected $catEloqentRepository;
+    protected $catRepo;
 
-    public function __construct(CategoryEloquentRepository $catEloqentRepository)
+    public function __construct(CategoryEloquentRepository $catRepo)
     {
-        $this->catEloqentRepository = $catEloqentRepository;
+        $this->catRepo = $catRepo;
     }
 
     /**
@@ -25,7 +25,12 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $cat = $this->catRepo->query()
+                             ->where('delete_flag', null)
+                             ->get();
+
+        // print_r($cat->all());
+        return view('cat.index');
     }
 
     /**
@@ -36,10 +41,6 @@ class CategoryController extends Controller
     public function create()
     {   
         $cat = Category::where('user_id', auth()->user()->id)->get();
-        $income_id = $cat->where('name', 'Income')->first()->id;
-        $outcome_id = $cat->where('name', 'Expense')->first()->id;
-        $transfer_id = $cat->where('name', 'Transfer to another wallet')->first()->id;
-        $cat = $cat->whereIn('parent_id', [0, $income_id, $outcome_id, $transfer_id]);
         return view('cat.create', compact('wallet_id', 'cat'));
     }
 
@@ -53,7 +54,7 @@ class CategoryController extends Controller
     {
         $data = $request->all();
         $data['user_id'] = auth()->user()->id;
-        $this->catEloqentRepository->create($data);
+        $this->catRepo->create($data);
         return redirect('/home');
     }
 
@@ -99,6 +100,10 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data['delete_flag'] = 1;
+
+        $this->catRepo->update($id, $data);
+
+        return redirect('/cat');
     }
 }
