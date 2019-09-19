@@ -63,6 +63,8 @@ Route::middleware('verified')->group(function () {
     });
 
     Route::group(['prefix' => 'cat', 'as' => 'cat.'], function () {
+        
+        Route::get('/', 'CategoryController@index')->name('index');
 
         Route::get('create', 'CategoryController@create')->name('create');
 
