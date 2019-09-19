@@ -20,6 +20,7 @@ class CreateCategoriesTable extends Migration
             $table->string('name');
             $table->integer('parent_id');
             $table->timestamps();
+            $table->integer('delete_flag')->nullable();
             $table->foreign('user_id')
                   ->references('id')
                   ->on('users')

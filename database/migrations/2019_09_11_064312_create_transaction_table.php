@@ -18,10 +18,11 @@ class CreateTransactionTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('wallet_id')->unsigned();
             $table->integer('cat_id')->unsigned();
-            $table->string('details');
+            $table->string('details')->nullable();
             $table->double('amount');
             $table->integer('benefit_wallet')->nullable();
             $table->timestamps();
+            $table->integer('delete_flag')->nullable();
             $table->foreign('user_id')
                   ->references('id')
                   ->on('users')
