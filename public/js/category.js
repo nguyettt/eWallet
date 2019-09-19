@@ -21,10 +21,10 @@ function type_select () {
             $("#parent_id").val("");
             break;
         }
-        case '3': {
+        default: {
             $(".1").css("display", "none");
             $(".2").css("display", "none");
-            $(".3").css("display", "block");
+            $(".3").css("display", "none");
             $("#parent_id").val("");
             break;
         }

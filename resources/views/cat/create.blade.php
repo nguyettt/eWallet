@@ -41,7 +41,6 @@
                             <option value="" disabled hidden selected>Select</option>
                             <option value="1" {{ old('type') == '1' ? 'selected' : '' }}>Income</option>
                             <option value="2" {{ old('type') == '2' ? 'selected' : '' }}>Expense</option>
-                            <option value="3" {{ old('type') == '3' ? 'selected' : '' }}>Transfer</option>
                         </select>
 
                         @error('type')
