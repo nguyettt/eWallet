@@ -170,7 +170,9 @@ class WalletController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data['delete_flag'] = 1;
+        $this->walletRepo->update($id, $data);
+        return redirect('/home');
     }
 
     /**

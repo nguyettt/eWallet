@@ -55,9 +55,14 @@ class NavComposer
         //      ->with('outcome', $cat_outcome)
         //      ->with('transfer', $cat_transfer);
 
-        $wallet = $this->wallet->getAll();
+        $wallet = $this->wallet->query()
+                            ->where('delete_flag', null)
+                            ->get();
 
-        $cat = $this->cat->query()->where('parent_id', '<>', 0)->get();
+        $cat = $this->cat->query()
+                        ->where('parent_id', '<>', 0)
+                        ->where('delete_flag', null)
+                        ->get();
         $income = $cat->where('type', 1)->all();
         $outcome = $cat->where('type', 2)->all();
 
