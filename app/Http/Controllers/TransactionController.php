@@ -42,9 +42,9 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        // $cat = Category::where('user_id', auth()->user()->id)->get();
-        // $wallet = Wallet::where('user_id', auth()->user()->id)->get();
-        return view('transaction.create');
+        $cat = Category::where('user_id', auth()->user()->id)->get();
+        $wallet = $this->walletRepo->getAll();
+        return view('transaction.create', compact('cat', 'wallet'));
     }
 
     /**

@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Wallet;
+use App\Category;
 
 class TransactionFormRequest extends FormRequest
 {
@@ -23,9 +25,14 @@ class TransactionFormRequest extends FormRequest
      * @return array
      */
     public function rules()
-    {
+    {   
+        $balance = Wallet::find($this->id);
         return [
-            'amount' => 'required|numeric|gte:0',
+            'amount' => [
+                'required',
+                'numeric',
+                'gte:0',
+            ],
             'wallet_id' => [
                 'required',
                 'numeric',
@@ -64,5 +71,16 @@ class TransactionFormRequest extends FormRequest
             'benefit_wallet.different' => 'The targe wallet can not be the same as the origin wallet',
             'benefit_wallet.exists' => 'Choose the correct benefit wallet',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $type = Category::find($this->cat_id)->type;
+            $balance = Wallet::find($this->wallet_id)->balance;
+            if ($type != 1 && $this->amount > $balance) {
+                $validator->errors()->add('amount', 'There is not enough money in wallet');
+            }
+        });
     }
 }
