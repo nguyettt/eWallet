@@ -31,4 +31,9 @@ class Transaction extends Model
     {
         return $this->belongsTo('App\Category', 'cat_id');
     }
+
+    public function benefit_wallet_id()
+    {
+        return $this->belongsTo('App\Wallet', 'benefit_wallet');
+    }
 }
