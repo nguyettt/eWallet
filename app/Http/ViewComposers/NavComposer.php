@@ -21,39 +21,50 @@ class NavComposer
     )
     {
         $this->user = auth()->user();
-        $this->wallet = $walletRepo->getAll();
-        $this->cat = $catRepo->getAll();
+        $this->wallet = $walletRepo;
+        $this->cat = $catRepo;
     }
 
     public function compose(View $view)
     {
-        $cat_data = $this->cat;
-        $cat_tree = $this->buildTree($cat_data);
+        // $cat_data = $this->cat;
+        // $cat_tree = $this->buildTree($cat_data);
 
-        foreach ($cat_tree as $cat) {
-            if ($cat['type'] == 1) {
-                $income_data = $cat['child'];
-            } elseif ($cat['type'] == 2) {
-                $outcome_data = $cat['child'];
-            } else {
-                $transfer_data = ($cat['child']) ? $cat['child'] : null;
-            }
-        }
+        // foreach ($cat_tree as $cat) {
+        //     if ($cat['type'] == 1) {
+        //         $income_data = $cat['child'];
+        //     } elseif ($cat['type'] == 2) {
+        //         $outcome_data = $cat['child'];
+        //     } else {
+        //         $transfer_data = ($cat['child']) ? $cat['child'] : null;
+        //     }
+        // }
 
-        $cat_income = $this->buildMenu($income_data, 1);
-        $cat_outcome = $this->buildMenu($outcome_data, 2);
-        if ($transfer_data != null) {
-            $cat_transfer = $this->buildMenu($transfer_data, 3);
-        } else {
-            $cat_transfer = '';
-        }        
+        // $cat_income = $this->buildMenu($income_data, 1);
+        // $cat_outcome = $this->buildMenu($outcome_data, 2);
+        // if ($transfer_data != null) {
+        //     $cat_transfer = $this->buildMenu($transfer_data, 3);
+        // } else {
+        //     $cat_transfer = '';
+        // }        
+
+        // $view->with('user', $this->user)
+        //      ->with('wallet', $this->wallet)
+        //      ->with('cat', $this->cat)
+        //      ->with('income', $cat_income)
+        //      ->with('outcome', $cat_outcome)
+        //      ->with('transfer', $cat_transfer);
+
+        $wallet = $this->wallet->getAll();
+
+        $cat = $this->cat->query()->where('parent_id', '<>', 0)->get();
+        $income = $cat->where('type', 1)->all();
+        $outcome = $cat->where('type', 2)->all();
 
         $view->with('user', $this->user)
-             ->with('wallet', $this->wallet)
-             ->with('cat', $this->cat)
-             ->with('income', $cat_income)
-             ->with('outcome', $cat_outcome)
-             ->with('transfer', $cat_transfer);
+             ->with('wallet', $wallet)
+             ->with('income', $income)
+             ->with('outcome', $outcome);
     }
 
     public function buildTree($array, $parent_id = 0)

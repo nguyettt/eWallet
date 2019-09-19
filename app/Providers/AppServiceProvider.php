@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
         View::composer([
             'layouts.nav',
             'cat.create',
-            'transaction.create',
         ], 'App\Http\ViewComposers\NavComposer');
     }
 }
