@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('script')
-<script src="js/category.js"></script>
+<script src="js/transaction.js"></script>
 @endpush
 
 @section('title')
@@ -12,7 +12,7 @@
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
         <div class="card-header row justify-content-center">
-            <h5 class="font-weight-bold">{{ __('New Transaction') }}</h5>
+            <h5 class="font-weight-bold">{{ __('Edit Transaction') }}</h5>
         </div>
 
         <div class="card-body">
@@ -55,8 +55,9 @@
                     <div class="col-md-6">
                         <select id="type" name="type" class="form-control @error('type') is-invalid @enderror" required>
                             <option value="" disabled hidden selected>Select</option>
-                            <option value="income" {{ $type == 'income' ? 'selected' : '' }}>Income</option>
-                            <option value="outcome" {{ $type == 'outcome' ? 'selected' : '' }}>Expense</option>
+                            <option value="1" @if (old('type')) {{ old('type') == 1 ? 'selected' : ''}} @else {{ $type == 1 ? 'selected' : '' }} @endif>Income</option>
+                            <option value="2" @if (old('type')) {{ old('type') == 2 ? 'selected' : ''}} @else {{ $type == 2 ? 'selected' : '' }} @endif>Expense</option>
+                            <option value="3" @if (old('type')) {{ old('type') == 3 ? 'selected' : ''}} @else {{ $type == 3 ? 'selected' : '' }} @endif>Transfer to another wallet</option>
                         </select>
 
                         @error('type')
@@ -111,10 +112,36 @@
                     </div>
                 </div>
 
+                <div class="form-group row benefit_wallet_block" style="display:none">
+                    <label for="benefit_wallet" class="col-md-4 col-form-label text-md-right">{{ __('Benefit Wallet') }}</label>
+
+                    <div class="col-md-6">
+                        <select id="benefit_wallet" name="benefit_wallet" class="form-control @error('benefit_wallet') is-invalid @enderror">
+                            <option value="" disabled hidden selected>Select</option>
+                            @foreach ($wallet as $_wallet)
+                                <option value="{{ $_wallet->id }}" 
+                                    @if (old('benefit_wallet')) 
+                                        {{ old('benefit_wallet') == $_wallet->id ? 'selected' : '' }} 
+                                    @elseif ($trans->benefit_wallet) 
+                                        {{ $trans->benefit_wallet == $_wallet->id ? 'selected' : '' }} 
+                                    @endif>
+                                    {{ $_wallet->name }}
+                                </option>                            
+                            @endforeach
+                        </select>
+
+                        @error('benefit_wallet')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4">
                         <button type="submit" class="btn btn-primary">
-                            {{ __('Create') }}
+                            {{ __('Save') }}
                         </button>
                     </div>
                 </div>

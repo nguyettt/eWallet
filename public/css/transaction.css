@@ -1,0 +1,7 @@
+.table tr td:first-child {
+    width: 5rem;
+}
+
+.table tr td span {
+    font-size: 110%;
+}

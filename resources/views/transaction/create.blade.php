@@ -114,7 +114,7 @@
                         <select id="benefit_wallet" name="benefit_wallet" class="form-control @error('benefit_wallet') is-invalid @enderror">
                             <option value="" disabled hidden selected>Select</option>
                             @foreach ($wallet as $_wallet)
-                                <option value="{{ $_wallet->id }}" @if (old('wallet_id')) {{ old('wallet_id') == $_wallet->id ? 'selected' : '' }} @endif>
+                                <option value="{{ $_wallet->id }}" @if (old('benefit_wallet')) {{ old('benefit_wallet') == $_wallet->id ? 'selected' : '' }} @endif>
                                     {{ $_wallet->name }}
                                 </option>                            
                             @endforeach

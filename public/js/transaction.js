@@ -1,8 +1,9 @@
-$(document).ready(function () {
+$(function () {
     type_select();
 
     $("#type").change(function () {
         type_select();
+        $("#benefit_wallet").val("");
     });
 })
 
@@ -16,7 +17,7 @@ function type_select () {
             $(".benefit_wallet_block").css("display", "none");
             $(".cat").css("display", "flex");
             $("#cat_id").val("");
-            $("#benefit_wallet").val("");
+            // $("#benefit_wallet").val("");
             break;
         }
         case '2': {
@@ -26,7 +27,7 @@ function type_select () {
             $(".benefit_wallet_block").css("display", "none");
             $(".cat").css("display", "flex");
             $("#cat_id").val("");
-            $("#benefit_wallet").val("");
+            // $("#benefit_wallet").val("");
             break;
         }
         case '3': {
@@ -36,7 +37,7 @@ function type_select () {
             $(".benefit_wallet_block").css("display", "flex");
             $(".cat").css("display", "none");
             $("#cat_id").val($(".3").val());
-            $("#benefit_wallet").val("");
+            // $("#benefit_wallet").val("");
             break;
         }
         default: {
@@ -46,7 +47,7 @@ function type_select () {
             $(".benefit_wallet_block").css("display", "none");
             $(".cat").css("display", "flex");
             $("#cat_id").val("");
-            $("#benefit_wallet").val("");
+            // $("#benefit_wallet").val("");
             break;
         }
     }

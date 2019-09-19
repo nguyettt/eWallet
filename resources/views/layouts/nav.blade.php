@@ -28,10 +28,14 @@
                             <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
                             {{ $item->name }}
                         </a>
-                        <form id="frmDel_{{ $wallet->id }}" method="POST" action="wallet/{{ $wallet->id }}">@csrf @method('DELETE')</form>
-                        <a href="#" id="del_{{ $wallet->id }}">
-                            <i class="fas fa-trash-alt mr-3 text-primary fa-fw float-right" style="cursor:pointer"></i>
-                        </a>
+                        <form id="frmDel_{{ $item->id }}" method="POST" action="wallet/{{ $item->id }}" style="display:none">
+                            @csrf 
+                            @method('DELETE')
+                            <input type="hidden" id="name_{{ $item->id }}" value="{{ $item->name }}">
+                        </form>
+                        <span style="cursor:pointer" onclick="delWallet({{ $item->id }})">
+                            <i class="fas fa-trash-alt mr-3 text-danger fa-fw float-right" style="cursor:pointer"></i>
+                        </span>
                         <a href="wallet/{{ $item->id }}/edit">
                             <i class="fas fa-edit mr-3 text-primary fa-fw float-right" style="cursor:pointer"></i>
                         </a>
