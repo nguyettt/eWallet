@@ -21,17 +21,11 @@
 
     <div id="wallet" class="collapse">
         <ul class="nav flex-column bg-white mb-0">
-            <li class="nav-item">
-                <a href="wallet/all" class="nav-link text-dark font-italic">
-                    <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
-                    All
-                </a>
-            </li>
-            @foreach ($wallet as $__wallet)
+            @foreach ($wallet as $item)
                 <li class="nav-item">
-                    <a href="wallet/{{ $__wallet->id }}" class="nav-link text-dark font-italic">
+                    <a href="wallet/{{ $item->id }}" class="nav-link text-dark font-italic">
                         <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
-                        {{ $__wallet->name }}
+                        {{ $item->name }}
                     </a>
                 </li>
             @endforeach
@@ -44,11 +38,15 @@
         </ul>
     </div>
 
-    <a href="#" data-toggle="collapse" data-target="#category" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
+    <a href="cat" class="nav-link text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">
         Categories
     </a>
 
-    <div id="category" class="collapse">
+    <a href="#" data-toggle="collapse" data-target="#transaction" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
+        Transactions
+    </a>
+
+    <div id="transaction" class="collapse">
         <ul class="nav flex-column bg-white mb-0">
             <li class="nav-item">
                 <div class="nav-link">
@@ -59,7 +57,16 @@
                     <i class="fas fa-sort-down mr-3 text-success fa-fw float-right" data-toggle="collapse" data-target="#income" style="cursor:pointer"></i>
                 </div>
                 <div id="income" class="collapse">
-                    {!! $income !!}
+                    <ul class="navv flex-column bg-white mb-0">
+                    @foreach ($income as $item)
+                        <li class="nav-item">
+                            <a href="cat/{{ $item->id }}" class="nav-link text-dark font-italic pl-0">
+                                <i class="fas fa-circle mr-3 text-success fa-fw" ></i>
+                                {{ $item->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                    </ul>
                 </div>
             </li>
             <li class="nav-item">
@@ -71,7 +78,16 @@
                     <i class="fas fa-sort-down mr-3 text-danger fa-fw float-right" data-toggle="collapse" data-target="#outcome" style="cursor:pointer"></i>
                 </div>
                 <div id="outcome" class="collapse">
-                    {!! $outcome !!}
+                    <ul class="navv flex-column bg-white mb-0">
+                    @foreach ($outcome as $item)
+                    <li class="nav-item">
+                        <a href="cat/{{ $item->id }}" class="nav-link text-dark font-italic pl-0">
+                            <i class="fas fa-circle mr-3 text-danger fa-fw" ></i>
+                            {{ $item->name }}
+                        </a>
+                    </li>
+                    @endforeach
+                    </ul>
                 </div>
             </li>
             <li class="nav-item">
@@ -80,17 +96,7 @@
                         <i class="fas fa-exchange-alt mr-3 text-info fa-fw"></i>
                         Transfer
                     </a>
-                    <i class="fas fa-sort-down mr-3 text-info fa-fw float-right" data-toggle="collapse" data-target="#transfer" style="cursor:pointer"></i>
                 </div>
-                <div id="transfer" class="collapse">
-                    {!! $transfer !!}
-                </div>
-            </li>
-            <li class="nav-item">
-                <a href="cat/create" class="nav-link text-dark font-italic">
-                    <i class="fas fa-plus-circle mr-3 text-primary fa-fw"></i>
-                    Create new category
-                </a>
             </li>
         </ul>
     </div>
