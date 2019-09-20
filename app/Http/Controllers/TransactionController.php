@@ -159,9 +159,14 @@ class TransactionController extends Controller
             switch($data['type']) {
                 case 1: {
                     $new_wallet->balance += $data['amount'];
+                    $data['benefit_wallet'] = null;
                     break;
                 }
-                case 2: 
+                case 2: {
+                    $new_wallet->balance -= $data['amount'];
+                    $data['benefit_wallet'] = null;
+                    break;
+                }
                 case 3: {
                     $new_wallet->balance -= $data['amount'];
                     break;
@@ -244,7 +249,7 @@ class TransactionController extends Controller
 
         $this->transactionRepo->update($id, $data);
 
-        return redirect('/transaction/'.$id.'/edit');
+        return redirect('/transaction/'.$id);
 
     }
 

@@ -20,21 +20,25 @@ class CreateTransactionTable extends Migration
             $table->integer('cat_id')->unsigned();
             $table->string('details')->nullable();
             $table->double('amount');
-            $table->integer('benefit_wallet')->nullable();
+            $table->integer('benefit_wallet')->unsigned()->nullable();
             $table->timestamps();
             $table->integer('delete_flag')->nullable();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                    ->references('id')
+                    ->on('users')
+                    ->onDelete('cascade');
             $table->foreign('wallet_id')
-                  ->references('id')
-                  ->on('wallets')
-                  ->onDelete('cascade');
+                    ->references('id')
+                    ->on('wallets')
+                    ->onDelete('cascade');
             $table->foreign('cat_id')
-                  ->references('id')
-                  ->on('categories')
-                  ->onDelete('cascade');
+                    ->references('id')
+                    ->on('categories')
+                    ->onDelete('cascade');
+            $table->foreign('benefit_wallet')
+                    ->references('id')
+                    ->on('wallets')
+                    ->onDelete('cascade');
         });
     }
 
