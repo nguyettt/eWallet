@@ -4,6 +4,14 @@
     Edit profile
 @endsection
 
+@push('script')
+<script>
+    var loadImg = function (event) {
+        $("#avatar").attr("src", URL.createObjectURL(event.target.files[0]));
+    }
+</script>
+@endpush
+
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
@@ -12,6 +20,11 @@
         </div>
 
         <div class="card-body">
+            <div class="row pb-2 justify-content-lg-center">
+                <img id="avatar" src="{{ $user->avatar }}" alt="..." width="100"
+                class="mr-3 rounded-circle img-thumbnail shadow-sm">
+            </div>
+
             <form method="POST" action="/profile/edit" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -130,7 +143,7 @@
 
                     <div class="col-md-6">
                         {{-- <input id="gender" type="text" class="form-control @error('lastName') is-invalid @enderror" name="lastName" required autocomplete="lastName"> --}}
-                        <input type="file" id="file" name="file" class="form-control-file @error('file') is-invalid @enderror">
+                        <input type="file" accept="image/*" id="file" name="file" class="form-control-file @error('file') is-invalid @enderror" onchange="loadImg(event)">
 
                         @error('file')
                         <span class="invalid-feedback" role="alert">
