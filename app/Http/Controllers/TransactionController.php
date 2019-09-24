@@ -180,17 +180,19 @@ class TransactionController extends Controller
                     if ($benefit_wallet->id == $data['benefit_wallet']) {
                         $benefit_wallet->balance -= $transaction->amount;
                         $benefit_wallet->balance += $data['amount'];
+                        $benefit_wallet->save();
                     } else {
                         $benefit_wallet->balance -= $transaction->amount;
                         $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
                         $new_benefit_wallet->balance += $data['amount'];
+                        $new_benefit_wallet->save();
                     }
                     $benefit_wallet->save();
                 } else {
                     $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
                     $new_benefit_wallet->balance += $data['amount'];
+                    $new_benefit_wallet->save();
                 }
-                $new_benefit_wallet->save();
             }
 
         } else {
@@ -232,17 +234,19 @@ class TransactionController extends Controller
                     if ($benefit_wallet->id == $data['benefit_wallet']) {
                         $benefit_wallet->balance -= $transaction->amount;
                         $benefit_wallet->balance += $data['amount'];
+                        $benefit_wallet->save();
                     } else {
                         $benefit_wallet->balance -= $transaction->amount;
                         $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
                         $new_benefit_wallet->balance += $data['amount'];
+                        $new_benefit_wallet->save();
                     }
                     $benefit_wallet->save();
                 } else {
                     $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
                     $new_benefit_wallet->balance += $data['amount'];
+                    $new_benefit_wallet->save();
                 }
-                $new_benefit_wallet->save();
             }
 
         }
