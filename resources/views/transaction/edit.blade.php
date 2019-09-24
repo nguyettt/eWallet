@@ -69,7 +69,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="cat_id" class="col-md-4 col-form-label text-md-right">{{ __('Parent category') }}</label>
+                    <label for="cat_id" class="col-md-4 col-form-label text-md-right">{{ __('Category') }}</label>
 
                     <div class="col-md-6">
                         <select id="cat_id" name="cat_id" class="form-control @error('cat_id') is-invalid @enderror" required>
