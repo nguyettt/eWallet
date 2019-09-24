@@ -52,11 +52,11 @@
                 <table class="table table-borderless">
                     <tr>
                         <th>Inflow</th>
-                        <td><h4 class="float-right text-success">{{ number_format($inflow, 2) }} đ</p></h4>
+                        <td><h4 class="float-right text-success">{{ number_format($flow['in'], 2) }} đ</p></h4>
                     </tr>
                     <tr>
                         <th>Outflow</th>
-                        <td><h4 class="float-right text-danger">{{ number_format($outflow, 2) }} đ</p></h4>
+                        <td><h4 class="float-right text-danger">{{ number_format($flow['out'], 2) }} đ</p></h4>
                     </tr>
                 </table>
             </div>
@@ -76,33 +76,16 @@
                         <span class="mt-auto mb-auto">{{ date('F', strtotime($date)) }}</span>
                     </div>
                 </div>
-                <div class="col-lg-4 pr-0">
-                    <h5 class="float-right @if ($item['sum'] < 0) text-danger @else text-success @endif">{{ number_format(abs($item['sum']), 2) }} đ</h5>
+                <div class="col-lg-4 p-0">                    
+                    <div class="col-lg-12 p-0">
+                        <h5 class="@if ($item['sum'] < 0) text-danger @else text-success @endif d-flex justify-content-end">{{ number_format(abs($item['sum']), 2) }} đ</h5>
+                    </div>
+                    <div class="col-lg-12 p-0 d-flex justify-content-end">
+                        <a href="wallet/{{ $wallet->id }}?time={{ date('d-m-Y', strtotime($date)) }}">Details</a>
+                    </div>
                 </div>
             </div>
             <hr style="width: 100%;">
-            @foreach ($item as $key => $record)
-                @if (is_array($record))
-                    <div class="col-lg-12 row pr-0">
-                        <a href="transaction/{{ $record['id'] }}" class="row col-lg-12 pr-0 text-dark">
-                            <div class="col-lg-8 mb-3">
-                                <div class="col-lg-12">
-                                    <h6 class="mt-auto mb-auto">{{ date('H:i:s', strtotime($record['created_at'])) }}</h6>
-                                </div>
-                                <div class="col-lg-12">
-                                    <h6 class="mt-auto mb-auto font-weight-bold">{{ $record['cat_name'] }}</h6>
-                                </div>
-                                <div class="col-lg-12">
-                                    <span class="mt-auto mb-auto">{{ $record['details'] }}</span>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 pr-0">
-                                <span class="mt-auto mb-auto float-right @if ($record['type'] == 1) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</span>
-                            </div>
-                        </a>
-                    </div>
-                @endif
-            @endforeach
         </div>
         
         <div class="row p-3"></div>
