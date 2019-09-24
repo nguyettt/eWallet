@@ -39,6 +39,7 @@ class TransactionFormRequest extends FormRequest
                     return $query->where('user_id', auth()->user()->id);
                 })
             ],
+            'type' => 'required|in:1,2,3',
             'cat_id' => [
                 'required',
                 Rule::exists('categories', 'id')->where(function ($query) {
