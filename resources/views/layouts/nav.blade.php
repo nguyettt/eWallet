@@ -1,7 +1,7 @@
 <div class="vertical-nav bg-white overflow-auto" id="sidebar">
     <div class="py-4 px-3 mb-4 bg-light">
-        <div class="media d-flex align-items-center"><img
-                src="{{ $user->avatar }}" alt="..." width="65"
+        <div class="media d-flex align-items-center">
+            <img src="{{ $user->avatar }}" alt="..." width="65"
                 class="mr-3 rounded-circle img-thumbnail shadow-sm">
             <div class="media-body">
                 <h4 class="m-0">{{ $user->username }}</h4>
