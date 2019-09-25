@@ -47,10 +47,10 @@ interface RepositoryInterface {
      */
     public function multiDelete(array $id_arr);
 
-    /**
-     * Create an array of objects
-     *
-     * @return array objects
-     */
-    public function toArray();
+    // /**
+    //  * Create an array of objects
+    //  *
+    //  * @return array objects
+    //  */
+    // public function toArray();
 }

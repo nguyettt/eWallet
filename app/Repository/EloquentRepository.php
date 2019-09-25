@@ -177,13 +177,13 @@ abstract class EloquentRepository implements RepositoryInterface {
         return false;
     }
 
-    /**
-     * Create an array of model objects
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->_model->get();
-    }
+    // /**
+    //  * Create an array of model objects
+    //  *
+    //  * @return array
+    //  */
+    // public function toArray()
+    // {
+    //     return $this->_model->get();
+    // }
 }
