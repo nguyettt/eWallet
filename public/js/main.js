@@ -3,6 +3,8 @@ $(function () {
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar, #content').toggleClass('active');
     });
+
+    $('#add').tooltip({trigger: 'hover'});
 });
 
 function delWallet(id) {

@@ -86,11 +86,21 @@
                         class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Menu</small></button>
             </div>
             <div class="row page-content p-5 fixed-bottom justify-content-center" id="content" 
-                @if (!in_array(Route::currentRouteName(), ['home', 'wallet.show', 'cat.show'])) 
+                @if (!in_array(Route::currentRouteName(), ['home', 'wallet.show', 'cat.show', 'cat.index'])) 
                     style="display: none" 
                 @endif
             >      
-                <a href="transaction/create" id="add" class="btn btn-primary btn-circle"><i class="fas fa-plus"></i></a>
+                <a href="
+                @if (Route::currentRouteName() == 'cat.index') 
+                    cat/create 
+                @else 
+                    transaction/create
+                @endif " id="add" class="btn btn-primary btn-circle" data-toggle="tooltip" data-placement="top" title="Add new 
+                @if (Route::currentRouteName() == 'cat.index')
+                    category
+                @else
+                    transaction
+                @endif "><i class="fas fa-plus"></i></a>
             </div>
             <div class="page-content p-5" id="content">
                 @yield('content')

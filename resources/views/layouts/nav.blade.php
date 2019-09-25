@@ -11,11 +11,11 @@
     </div>
 
     {{-- <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Wallets</p> --}}
-    <a href="/home" class="nav-link text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">
+    <a href="/home" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Home
     </a>
 
-    <a href="#" data-toggle="collapse" data-target="#wallet" class="nav-link text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">
+    <a href="#" data-toggle="collapse" data-target="#wallet" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Wallet
     </a>
 
@@ -51,7 +51,7 @@
         </ul>
     </div>
 
-    <a href="cat" class="nav-link text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">
+    <a href="cat" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Categories
     </a>
 
