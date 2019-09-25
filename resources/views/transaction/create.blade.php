@@ -107,6 +107,14 @@
                     </div>
                 </div>
 
+                <div class="form-group row">
+                    <label for="balance" class="col-md-4 col-form-label text-md-right">{{ __('Balance') }}</label>
+
+                    <div class="col-md-6">
+                        <input type="text" disabled id="balance" class="form-control" value="0">
+                    </div>
+                </div>
+
                 <div class="form-group row benefit_wallet_block" style="display:none">
                     <label for="benefit_wallet" class="col-md-4 col-form-label text-md-right">{{ __('Benefit Wallet') }}</label>
 

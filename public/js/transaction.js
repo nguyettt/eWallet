@@ -1,10 +1,15 @@
 $(function () {
     type_select();
+    getBalance();
 
     $("#type").change(function () {
         type_select();
         $("#benefit_wallet").val("");
     });
+
+    $("#wallet_id").change(function () {
+        getBalance();
+    })
 })
 
 function type_select () {
@@ -51,4 +56,17 @@ function type_select () {
             break;
         }
     }
+}
+
+function getBalance () {
+    var id = $("#wallet_id").val();
+    $.ajax({
+        method:"POST",
+        url:"wallet/getbalance",
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        data: {id : id},
+        success: function (data) {
+            $("#balance").val(data);
+        }
+    });
 }
