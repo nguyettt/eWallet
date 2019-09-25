@@ -132,7 +132,7 @@ class WalletController extends Controller
 
         } else {
 
-            $date = $day.' - '.$month.' - '.$year;
+            $date = str_pad($day, 2, '0', STR_PAD_LEFT).' - '.str_pad($month, 2, '0', STR_PAD_LEFT).' - '.$year;
 
             $transaction = $this->transactionRepo->query()
                                                 ->whereDate('created_at', $year.'-'.$month.'-'.$day)
@@ -148,8 +148,6 @@ class WalletController extends Controller
                     $flow['out'] -= $item->amount;
                 }
             }
-
-            // dump($transaction);
 
             return view('wallet.day', compact('transaction', 'flow', 'wallet', 'date'));
 
@@ -196,38 +194,9 @@ class WalletController extends Controller
         return redirect('/home');
     }
 
-    /**
-     * Generate cat_type_id array
-     * @return array
-     */
-    public function cat_array()
+    public function getBalance(Request $request)
     {
-        $cat = $this->catRepo->getAll();
-        $array = array();
-        $income = array();
-        $outcome = array();
-
-        foreach ($cat as $item) {
-            switch ($item['type']) {
-                case 1: {
-                    $income[] = $item['id'];
-                    break;
-                }
-                case 2: 
-                case 3: {
-                    $outcome[] = $item['id'];
-                    break;
-                }
-            }
-        }
-
-        $array['income'] = $income;
-        $array['outcome'] = $outcome;
-        return $array;
-    }
-
-    public function buildListTransaction($id)
-    {
-        // $transaction = $this->transactionRepo->
+        $wallet = $this->walletRepo->find($request->id);
+        return response()->json(number_format($wallet->balance, 2));
     }
 }

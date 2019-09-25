@@ -8,17 +8,23 @@
     <link rel="stylesheet" href="css/wallet.css">
 @endpush
 
+@push('script')
+    <script>
+    $(function () {
+        var date = "{{ $date }}";
+        var time = date.split(" - ");
+        $("#backLink").attr("href", "wallet/{{ $wallet->id }}?time=" + time[1] + "-" + time[2]);
+    })
+    </script>
+@endpush
+
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
         <div class="card-header row justify-content-center">
             <div class="col-lg-12 row">
-                <div class="col-lg-2 d-flex justify-content-start">
-                    <div class="rounded-circle bg-secondary">
-                    <a href="{{ url()->previous() }}">
-                            <h3>&#8249;</h3>
-                    </a>
-                    </div>
+                <div class="col-lg-2 p-0 d-flex justify-content-start">
+                    <a id="backLink" href="#" class="btn btn-success">Back</a>
                 </div>
                 <div class="col-lg-8 d-flex justify-content-center">
                     <h4 class="font-weight-bold">{{ $date }}</h4>

@@ -34,6 +34,9 @@
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
+        <div class="card-body">
+            <h3>Balance: {{ number_format($wallet->balance, 2) }} đ</h3>
+        </div>
         <div class="card-header row justify-content-center">
             <div class="row col-lg-12 justify-content-between">
                 <a href="wallet/{{ $wallet->id }}?time={{ $prev }}">
@@ -62,6 +65,7 @@
             </div>
         </div>
         <br>
+        
         @foreach ($records as $date => $item)
         <div class="row">
             <div class="row col-lg-12" id="{{ date('d-m-Y', strtotime($date)) }}">
@@ -88,7 +92,10 @@
             <hr style="width: 100%;">
         </div>
         
+        @if (end($records) != $item)
         <div class="row p-3"></div>
+        @endif
+
         @endforeach
     </div>   
 </div>
