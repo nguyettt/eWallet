@@ -60,6 +60,8 @@ Route::middleware('verified')->group(function () {
 
         Route::delete('/{id}', 'WalletController@destroy')->name('delete');
 
+        Route::post('/getbalance', 'WalletController@getBalance')->name('getBalance');
+
     });
 
     Route::group(['prefix' => 'cat', 'as' => 'cat.'], function () {
