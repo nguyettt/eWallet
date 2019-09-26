@@ -60,16 +60,17 @@
 <div class="container-fluid">
     <div class="card bg-light p-5 col-lg-12">
         <div class="card-header row justify-content-center">
-            <h1 class="font-weight-bold">{{ date('m - Y') }}</h1>
+            <h1 class="font-weight-bold">Overview</h1>
         </div>
         <div class="row col-lg-12">
             <div class="col-lg-6 p-0">
+                <div class="col-lg-12 d-flex justify-content-center pt-3"><h4>{{ date('m - Y') }}</h4></div>
                 <div id="pie_chart" class="col-lg-12"></div>
             </div>
             <div class="col-lg-6 p-0 d-flex align-items-center">
                 <div class="col-lg-12">
                     <div class="row col-lg-12 justify-content-end p-3">
-                        <h4 class="text-dark">Startingbalance: {{ number_format($startingBalance, 2) }} đ</h4>
+                        <h4 class="text-dark">Starting balance: {{ number_format($startingBalance, 2) }} đ</h4>
                     </div>
                     <div class="row col-lg-12 justify-content-end p-3">
                         <h4 class="text-dark">Ending balance: {{ number_format($balance, 2) }} đ</h4>
