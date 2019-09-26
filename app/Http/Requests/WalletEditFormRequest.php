@@ -29,9 +29,10 @@ class WalletEditFormRequest extends FormRequest
                 'required',
                 Rule::unique('wallets')->where(function ($query) {
                     $user_id = auth()->user()->id;
-                    $wallet_id = $this->wallet_id;
+                    $wallet_id = $this->id;
                     return $query->where('user_id', $user_id)
-                                ->where('id', '<>', $wallet_id);
+                                ->where('id', '<>', $wallet_id)
+                                ->where('delete_flag', null);
                 })
             ]
         ];

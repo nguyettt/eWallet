@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Category;
 
-class CategoryFormRequest extends FormRequest
+class EditCategoryFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +25,14 @@ class CategoryFormRequest extends FormRequest
      */
     public function rules()
     {
-        $cat = Category::where('user_id', auth()->user()->id)->pluck('id')->all();
+        $cat = Category::where('user_id', auth()->user()->id)
+                        ->where('id', '<>', $this->id)
+                        ->pluck('id')
+                        ->all();
         return [
             'type' => [
                 'required',
-                Rule::in([1, 2, 3]),
+                Rule::in([1, 2]),
             ],
             'name' => [
                 'required',
@@ -43,5 +46,6 @@ class CategoryFormRequest extends FormRequest
                 Rule::in($cat),
             ],
         ];
+
     }
 }
