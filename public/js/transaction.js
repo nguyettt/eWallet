@@ -66,7 +66,7 @@ function getBalance () {
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         data: {id : id},
         success: function (data) {
-            $("#balance").val(data);
+            $("#balance").val(data + " đ");
         }
     });
 }
