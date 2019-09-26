@@ -1,5 +1,17 @@
 @extends('layouts.app')
 
+@error('restore')
+@push('script')
+    <script>
+        $(function () {
+            if (confirm("There is a deleted wallet with the same name, do you want to restore it instead?")) {
+                window.location.href = "/wallet/{{ session('restore_id') }}/restore";
+            }
+        })
+    </script>    
+@endpush
+@enderror
+
 @section('title')
     Create new wallet
 @endsection

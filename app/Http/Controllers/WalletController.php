@@ -46,11 +46,28 @@ class WalletController extends Controller
      */
     public function store(WalletFormRequest $request)
     {
-        $data = $request->all();
-        $data['user_id'] = auth()->user()->id;
-        $data['balance'] = 0;
-        $this->walletRepo->create($data);
-        return redirect('/home');
+        $deleted = $this->walletRepo->deleted();
+
+        if ($deleted->count() > 0) {
+            foreach ($deleted as $item) {
+                if ($item->name == $request->name) {
+                    $restore = $item->id;
+                    break;
+                }
+            }
+        }
+
+        if (isset($restore)) {
+            return back()->withErrors(['restore' => 'Can restore'])
+                        ->withInput()
+                        ->with('restore_id', $restore);
+        } else {
+            $data = $request->all();
+            $data['user_id'] = auth()->user()->id;
+            $data['balance'] = 0;
+            $this->walletRepo->create($data);
+            return redirect('/dashboard');
+        }
     }
 
     /**
@@ -176,6 +193,17 @@ class WalletController extends Controller
      */
     public function update(WalletEditFormRequest $request, $id)
     {
+        $deleted = $this->walletRepo->deleted();
+
+        if ($deleted->count() > 0) {
+            foreach ($deleted as $item) {
+                if ($item->name == $request->name) {
+                    return back()->withErrors(['existed' => 'Wallet exists'])
+                                ->withInput();
+                }
+            }
+        }
+
         $data = $request->all();
         $this->walletRepo->update($id, $data);
         return redirect('/wallet/'.$id);
@@ -189,9 +217,54 @@ class WalletController extends Controller
      */
     public function destroy($id)
     {
-        $data['delete_flag'] = 1;
-        $this->walletRepo->update($id, $data);
-        return redirect('/home');
+        $wallet = $this->walletRepo->find($id);
+
+        if ($wallet->transaction()->count() == 0 && $wallet->transferTransaction()->count() == 0) {
+            $wallet->delete();
+        } else {
+            $data['delete_flag'] = 1;
+            $data['balance'] = 0;
+
+            $this->walletRepo->update($id, $data);
+
+            $main_wallet = $this->walletRepo->query()
+                                            ->where('name', 'Main Wallet')
+                                            ->first();
+            $main_wallet->balance += $wallet->balance;
+            $main_wallet->save();
+
+            $transaction['user_id'] = auth()->user()->id;
+            $transaction['wallet_id'] = $id;
+            $transaction['cat_id'] = $this->catRepo->query()->where('type', 3)->first()->id;
+            $transaction['type'] = 3;
+
+            $transaction = [
+                'user_id' => auth()->user()->id,
+                'wallet_id' => $id,
+                'cat_id' => $this->catRepo->query()->where('type', 3)->first()->id,
+                'details' => 'Transfer from '.$wallet->name.' to Main Wallet',
+                'type' => 3,
+                'amount' => $wallet->balance,
+                'benefit_wallet' => $main_wallet->id
+            ];
+
+            $this->transactionRepo->create($transaction);
+        }
+        
+        return redirect('/dashboard');
+    }
+
+    /**
+     * Restore the wallet with id = $id
+     *
+     * @param int $id
+     * @return void
+     */
+    public function restore($id)
+    {
+        $this->walletRepo->restore($id);
+
+        return redirect('/dashboard');
     }
 
     public function getBalance(Request $request)
