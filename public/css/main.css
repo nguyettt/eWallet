@@ -95,3 +95,8 @@ body {
 .nav-link a {
     text-decoration: none;
 }
+
+#pie_chart {
+    display: block;
+    margin: 0 auto !important;
+}

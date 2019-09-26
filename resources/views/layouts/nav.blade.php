@@ -11,8 +11,8 @@
     </div>
 
     {{-- <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Wallets</p> --}}
-    <a href="/home" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
-        Home
+    <a href="/dashboard" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
+        Dashboard
     </a>
 
     <a href="#" data-toggle="collapse" data-target="#wallet" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
