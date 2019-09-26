@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\CategoryFormRequest;
+use App\Http\Requests\EditCategoryFormRequest;
 use App\Wallet;
 use App\Category;
 use App\Repository\CategoryEloquentRepository;
@@ -43,7 +44,9 @@ class CategoryController extends Controller
      */
     public function create()
     {   
-        $cat = Category::where('user_id', auth()->user()->id)->get();
+        $cat = $this->catRepo->query()
+                            ->where('delete_flag', null)
+                            ->get();
         return view('cat.create', compact('wallet_id', 'cat'));
     }
 
@@ -55,10 +58,27 @@ class CategoryController extends Controller
      */
     public function store(CategoryFormRequest $request)
     {
-        $data = $request->all();
-        $data['user_id'] = auth()->user()->id;
-        $this->catRepo->create($data);
-        return redirect('/cat');
+        $deleted = $this->catRepo->deleted();
+
+        if ($deleted->count() > 0) {
+            foreach ($deleted as $item) {
+                if ($item->name == $request->name) {
+                    $restore = $item->id;
+                    break;
+                }
+            }
+        }
+
+        if (isset($restore)) {
+            return back()->withErrors(['restore' => 'Can restore'])
+                        ->withInput()
+                        ->with('restore_id', $restore);
+        } else {
+            $data = $request->all();
+            $data['user_id'] = auth()->user()->id;
+            $this->catRepo->create($data);
+            return redirect('/cat');
+        }
     }
 
     /**
@@ -80,7 +100,17 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        //
+        $cat = $this->catRepo->find($id);
+
+        $cats = $this->catRepo->getAll();
+
+        if ($cat->parent_id == 0) {
+            
+            return back()->withErrors(['edit' => 'Can not edit default category']);
+
+        }
+
+        return view('cat.edit', compact('cat', 'cats'));
     }
 
     /**
@@ -90,9 +120,21 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(EditCategoryFormRequest $request, $id)
     {
-        //
+        $deleted = $this->catRepo->deleted();
+
+        if ($deleted->count() > 0) {
+            foreach ($deleted as $item) {
+                if ($item->name == $request->name) {
+                    return back()->withErrors(['existed' => 'Cat exists'])->withInput();
+                }
+            }
+        }
+
+        $data = $request->all();
+        $this->catRepo->update($id, $data);
+        return redirect('/cat');
     }
 
     /**
@@ -103,21 +145,49 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $data['delete_flag'] = 1;
+        $category = $this->catRepo->find($id);
 
-        $this->catRepo->update($id, $data);
+        if ($category->parent_id == 0) {
+            
+            return back()->withErrors(['delete' => 'Can not delete default category']);
+
+        }
 
         $cat = $this->catRepo->query()
                             ->where('delete_flag', null)
                             ->where('parent_id', $id)
                             ->get();
-        
-        foreach ($cat as $item) {
 
-            $this->destroy($item->id);
+        if ($category->transaction()->count() == 0 && $cat->count() == 0) {
+
+                $category->delete();
+
+        } else {
+
+            $data['delete_flag'] = 1;
+
+            $this->catRepo->update($id, $data);
+            
+            foreach ($cat as $item) {
+    
+                $this->destroy($item->id);
+    
+            }
 
         }
 
+        return redirect('/cat');
+    }
+
+    /**
+     * Restore a category and all of it's parent category
+     *
+     * @param int $id
+     * @return void
+     */
+    public function restore($id)
+    {
+        $this->catRepo->restore($id);
         return redirect('/cat');
     }
 
@@ -163,6 +233,7 @@ class CategoryController extends Controller
                 case 3: $color = 'text-info';
                         break;
             }
+            $hidden = ($item['parent_id'] == 0)?'hidden':'';
             $csrf = csrf_token();
             if (isset($item['child'])) {
                 $menu .= "<li>\n
@@ -176,10 +247,10 @@ class CategoryController extends Controller
                                     <input type='hidden' name='_method' value='DELETE'>\n
                                     <input type='hidden' id='cat_{$item['id']}' value='{$item['name']}'>\n
                                 </form>\n
-                                <a href='cat/{$item['id']}/edit'>\n
+                                <a href='cat/{$item['id']}/edit' {$hidden}>\n
                                     <i class='fas fa-edit ml-5 text-primary fa-fw align-bottom' style='cursor:pointer'></i>\n
                                 </a>\n
-                                <span style='cursor:pointer' onclick='delCat({$item['id']})'>\n
+                                <span style='cursor:pointer' onclick='delCat({$item['id']})' {$hidden}>\n
                                     <i class='fas fa-trash-alt ml-3 text-danger fa-fw align-bottom' style='cursor:pointer'></i>\n
                                 </span>\n
                                 <i class='fas fa-sort-down ml-3 {$color} fa-lg' data-toggle='collapse' data-target='#{$item['name']}' style='cursor:pointer'></i>\n
@@ -198,10 +269,10 @@ class CategoryController extends Controller
                                     <input type='hidden' name='_method' value='DELETE'>\n
                                     <input type='hidden' id='cat_{$item['id']}' value='{$item['name']}'>\n
                                 </form>\n
-                                <a href='cat/{$item['id']}/edit'>\n
+                                <a href='cat/{$item['id']}/edit' {$hidden}>\n
                                     <i class='fas fa-edit ml-5 text-primary fa-fw' style='cursor:pointer'></i>\n
                                 </a>\n
-                                <span style='cursor:pointer' onclick='delCat({$item['id']})'>\n
+                                <span style='cursor:pointer' onclick='delCat({$item['id']})' {$hidden}>\n
                                     <i class='fas fa-trash-alt ml-3 text-danger fa-fw ' style='cursor:pointer'></i>\n
                                 </span>\n
                             </div>\n
@@ -210,6 +281,5 @@ class CategoryController extends Controller
         }
 
         return $menu."</ul>\n</div>\n";
-
     }
 }
