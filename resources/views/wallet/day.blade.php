@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    {{ $wallet->name }} : {{ $date }}
+    @if (isset($wallet)) {{ $wallet->name }} @else Undefined @endif : {{ $date }}
 @endsection
 
 @push('style')    
@@ -13,7 +13,7 @@
     $(function () {
         var date = "{{ $date }}";
         var time = date.split(" - ");
-        $("#backLink").attr("href", "wallet/{{ $wallet->id }}?time=" + time[1] + "-" + time[2]);
+        $("#backLink").attr("href", "wallet/{{ $id }}?time=" + time[1] + "-" + time[2]);
     })
     </script>
 @endpush
@@ -45,24 +45,25 @@
         </div>
         <div class="card-body row">
         @foreach ($transaction as $key => $record)
-            <div class="col-lg-12 row pr-0">
-                <a href="transaction/{{ $record['id'] }}" class="row col-lg-12 pr-0 text-dark">
-                    <div class="col-lg-8">
-                        <div class="col-lg-12">
-                            <h6 class="mt-auto mb-auto">{{ date('H:i:s', strtotime($record['created_at'])) }}</h6>
+                <div class="col-lg-12 row pr-0">
+                    <a href="transaction/{{ $record['id'] }}" class="row col-lg-12 pr-0 text-dark">
+                        <div class="col-lg-8">
+                            <div class="col-lg-12">
+                                <h6 class="mt-auto mb-auto">{{ date('H:i:s', strtotime($record['created_at'])) }}</h6>
+                            </div>
+                            <div class="col-lg-12">
+                                <span class="mt-auto mb-auto h6">{{ $record['details'] }}</span>
+                            </div>
                         </div>
-                        <div class="col-lg-12">
-                            <h6 class="mt-auto mb-auto font-weight-bold">{{ $record['cat_name'] }}</h6>
+                        <div class="col-lg-4 pr-0 d-flex justify-content-end">
+                            @if (isset($wallet))
+                                <h5 class="mt-auto mb-auto @if ($record['type'] == 1 || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</h5>
+                            @else
+                            <h5 class="mt-auto mb-auto @if ($record['type'] == 1) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</h5>
+                            @endif
                         </div>
-                        <div class="col-lg-12">
-                            <span class="mt-auto mb-auto">{{ $record['details'] }}</span>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 pr-0 d-flex justify-content-end">
-                        <span class="mt-auto mb-auto @if ($record['type'] == 1 || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</span>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
             <hr style="width:100%">
         @endforeach
         </div>

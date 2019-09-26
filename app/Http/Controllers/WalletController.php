@@ -99,20 +99,28 @@ class WalletController extends Controller
             $month = date('m');
             $year = date('Y');
         }
-
-        $wallet = $this->walletRepo->find($id);
+        if ($id == 'undefined') {
+            $deleted = $this->walletRepo->deleted()->pluck('id');
+        } else {
+            $wallet = $this->walletRepo->find($id);
+        }
         
         if (!isset($day)) {
 
             $time = str_pad($month, 2, '0', STR_PAD_LEFT).' - '.$year;
-    
+            
             $transaction = $this->transactionRepo->query()
                                                 ->whereMonth('created_at', $month)
                                                 ->whereYear('created_at', $year)
-                                                ->where('delete_flag', null)
-                                                ->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
-                                                ->orderBy('created_at', 'asc')
-                                                ->get();
+                                                ->where('delete_flag', null);
+
+            if (isset($wallet)) {
+                $transaction = $transaction->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
+                                            ->get();
+            } else {
+                $transaction = $transaction->whereIn('wallet_id', $deleted)
+                                            ->get();
+            }
     
             $records = array();
     
@@ -145,7 +153,7 @@ class WalletController extends Controller
                 $prev = '11-'.$year;
             }
 
-            return view('wallet.show', compact('wallet', 'flow', 'records', 'time', 'next', 'prev'));
+            return view('wallet.show', compact('wallet', 'flow', 'records', 'time', 'next', 'prev', 'id'));
 
         } else {
 
@@ -153,10 +161,15 @@ class WalletController extends Controller
 
             $transaction = $this->transactionRepo->query()
                                                 ->whereDate('created_at', $year.'-'.$month.'-'.$day)
-                                                ->where('delete_flag', null)
-                                                ->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
-                                                ->orderBy('created_at', 'asc')
-                                                ->get();
+                                                ->where('delete_flag', null);
+
+            if (isset($wallet)) {
+                $transaction = $transaction->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
+                                            ->get();
+            } else {
+                $transaction = $transaction->whereIn('wallet_id', $deleted)
+                                            ->get();
+            }
 
             foreach ($transaction as $item) {
                 if ($item->type == 1 || $item->benefit_wallet == $id) {
@@ -166,7 +179,7 @@ class WalletController extends Controller
                 }
             }
 
-            return view('wallet.day', compact('transaction', 'flow', 'wallet', 'date'));
+            return view('wallet.day', compact('transaction', 'flow', 'wallet', 'date', 'id'));
 
         }
 
@@ -227,28 +240,30 @@ class WalletController extends Controller
 
             $this->walletRepo->update($id, $data);
 
-            $main_wallet = $this->walletRepo->query()
-                                            ->where('name', 'Main Wallet')
-                                            ->first();
-            $main_wallet->balance += $wallet->balance;
-            $main_wallet->save();
+            if ($wallet->balance > 0) {
+                $main_wallet = $this->walletRepo->query()
+                                                ->where('name', 'Main Wallet')
+                                                ->first();
+                $main_wallet->balance += $wallet->balance;
+                $main_wallet->save();
 
-            $transaction['user_id'] = auth()->user()->id;
-            $transaction['wallet_id'] = $id;
-            $transaction['cat_id'] = $this->catRepo->query()->where('type', 3)->first()->id;
-            $transaction['type'] = 3;
+                $transaction['user_id'] = auth()->user()->id;
+                $transaction['wallet_id'] = $id;
+                $transaction['cat_id'] = $this->catRepo->query()->where('type', 3)->first()->id;
+                $transaction['type'] = 3;
 
-            $transaction = [
-                'user_id' => auth()->user()->id,
-                'wallet_id' => $id,
-                'cat_id' => $this->catRepo->query()->where('type', 3)->first()->id,
-                'details' => 'Transfer from '.$wallet->name.' to Main Wallet',
-                'type' => 3,
-                'amount' => $wallet->balance,
-                'benefit_wallet' => $main_wallet->id
-            ];
+                $transaction = [
+                    'user_id' => auth()->user()->id,
+                    'wallet_id' => $id,
+                    'cat_id' => $this->catRepo->query()->where('type', 3)->first()->id,
+                    'details' => 'Transfer from '.$wallet->name.' to Main Wallet',
+                    'type' => 3,
+                    'amount' => $wallet->balance,
+                    'benefit_wallet' => $main_wallet->id
+                ];
 
-            $this->transactionRepo->create($transaction);
+                $this->transactionRepo->create($transaction);
+            }
         }
         
         return redirect('/dashboard');

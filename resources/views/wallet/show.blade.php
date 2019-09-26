@@ -21,29 +21,32 @@
             $("#datepicker").change(function () {
                 var date = $("#datepicker").val();
                 var time = date.substring(3, 10);
-                window.location.href = "wallet/{{ $wallet->id }}?time="+time+"#"+date;
+                window.location.href = "wallet/{{ $id }}?time="+time+"#"+date;
             });
         })  
     </script>
 @endpush
 
 @section('title')
-    {{ $wallet['name'] }}
+    @if (isset($wallet)) {{ $wallet['name'] }} @else Undefined @endif
 @endsection
 
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
+        @if (isset($wallet))
         <div class="card-body">
             <h3>Balance: {{ number_format($wallet->balance, 2) }} đ</h3>
         </div>
+        @endif
+
         <div class="card-header row justify-content-center">
             <div class="row col-lg-12 justify-content-between">
-                <a href="wallet/{{ $wallet->id }}?time={{ $prev }}">
+                <a href="wallet/{{ $id }}?time={{ $prev }}">
                     <i class="fas fa-arrow-left fa-fw text-dark"></i>
                 </a>
                 <h4 class="font-weight-bold">{{ $time }}</h4>
-                <a href="wallet/{{ $wallet->id }}?time={{ $next }}">
+                <a href="wallet/{{ $id }}?time={{ $next }}">
                     <i class="fas fa-arrow-right fa-fw text-dark"></i>
                 </a>
             </div>
@@ -68,6 +71,7 @@
         
         @foreach ($records as $date => $item)
         <div class="row">
+            <a href="wallet/{{ $id }}?time={{ date('d-m-Y', strtotime($date)) }}" class="row col-lg-12 pr-0 text-dark">
             <div class="row col-lg-12" id="{{ date('d-m-Y', strtotime($date)) }}">
                 <div class="col-lg-2 p-0 d-flex justify-content-center">
                     <h1 class="mt-auto mb-auto">{{ date('d', strtotime($date)) }}</h1>
@@ -80,15 +84,13 @@
                         <span class="mt-auto mb-auto">{{ date('F', strtotime($date)) }}</span>
                     </div>
                 </div>
-                <div class="col-lg-4 p-0">                    
-                    <div class="col-lg-12 p-0">
+                <div class="col-lg-4 p-0 d-flex">                    
+                    <div class="col-lg-12 p-0 mt-auto mb-auto">
                         <h5 class="@if ($item['sum'] < 0) text-danger @else text-success @endif d-flex justify-content-end">{{ number_format(abs($item['sum']), 2) }} đ</h5>
-                    </div>
-                    <div class="col-lg-12 p-0 d-flex justify-content-end">
-                        <a href="wallet/{{ $wallet->id }}?time={{ date('d-m-Y', strtotime($date)) }}">Details</a>
                     </div>
                 </div>
             </div>
+            </a>
             <hr style="width: 100%;">
         </div>
         

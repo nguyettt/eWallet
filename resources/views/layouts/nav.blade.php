@@ -28,20 +28,30 @@
                             <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
                             {{ $item->name }}
                         </a>
-                        <form id="frmDel_{{ $item->id }}" method="POST" action="wallet/{{ $item->id }}" style="display:none">
-                            @csrf 
-                            @method('DELETE')
-                            <input type="hidden" id="name_{{ $item->id }}" value="{{ $item->name }}">
-                        </form>
-                        <span style="cursor:pointer" onclick="delWallet({{ $item->id }})">
-                            <i class="fas fa-trash-alt mr-3 text-danger fa-fw float-right" style="cursor:pointer"></i>
-                        </span>
-                        <a href="wallet/{{ $item->id }}/edit">
-                            <i class="fas fa-edit mr-3 text-primary fa-fw float-right" style="cursor:pointer"></i>
-                        </a>
+                        @if ($item->name != 'Main Wallet')
+                            <form id="frmDel_{{ $item->id }}" method="POST" action="wallet/{{ $item->id }}" style="display:none">
+                                @csrf 
+                                @method('DELETE')
+                                <input type="hidden" id="name_{{ $item->id }}" value="{{ $item->name }}">
+                            </form>
+                            <span style="cursor:pointer" onclick="delWallet({{ $item->id }})">
+                                <i class="fas fa-trash-alt mr-3 text-danger fa-fw float-right" style="cursor:pointer"></i>
+                            </span>
+                            <a href="wallet/{{ $item->id }}/edit">
+                                <i class="fas fa-edit mr-3 text-primary fa-fw float-right" style="cursor:pointer"></i>
+                            </a>
+                        @endif
                     </div>
                 </li>
             @endforeach
+            <li class="nav-item">
+                <div class="nav-link">
+                    <a href="wallet/undefined" class="text-dark font-italic">
+                        <i class="fas fa-wallet mr-3 text-primary fa-fw"></i>
+                        Undefined
+                    </a>
+                </div>
+            </li>
             <li class="nav-item">
                 <a href="wallet/create" class="nav-link text-dark font-italic">
                     <i class="fas fa-plus-circle mr-3 text-primary fa-fw"></i>
