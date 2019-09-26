@@ -28,7 +28,7 @@ Route::get('/check', function () {
 
 Route::middleware('verified')->group(function () {
 
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/dashboard', 'HomeController@index')->name('home');
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
 
@@ -56,6 +56,8 @@ Route::middleware('verified')->group(function () {
 
         Route::get('/{id}/edit', 'WalletController@edit')->name('edit');
 
+        Route::get('/{id}/restore', 'WalletController@restore')->name('restore');
+
         Route::put('/{id}', 'WalletController@update')->name('update');
 
         Route::delete('/{id}', 'WalletController@destroy')->name('delete');
@@ -75,6 +77,8 @@ Route::middleware('verified')->group(function () {
         Route::get('/{id}', 'CategoryController@show')->name('show');
 
         Route::get('/{id}/edit', 'CategoryController@edit')->name('edit');
+
+        Route::get('/{id}/restore', 'CategoryController@restore')->name('restore');
 
         Route::put('/{id}', 'CategoryController@update')->name('update');
 
