@@ -47,7 +47,7 @@ Route::middleware('verified')->group(function () {
     });
 
     Route::group(['prefix' => 'wallet', 'as' => 'wallet.'], function () {
-        
+
         Route::get('/create', 'WalletController@create')->name('create');
 
         Route::post('/', 'WalletController@store')->name('store');
@@ -67,7 +67,7 @@ Route::middleware('verified')->group(function () {
     });
 
     Route::group(['prefix' => 'cat', 'as' => 'cat.'], function () {
-        
+
         Route::get('/', 'CategoryController@index')->name('index');
 
         Route::get('create', 'CategoryController@create')->name('create');
@@ -100,6 +100,10 @@ Route::middleware('verified')->group(function () {
 
         Route::delete('/{id}', 'TransactionController@destroy')->name('delete');
     });
+
+    Route::post('/export', 'ExportController@export')->name('export');
+
+    Route::get('/export', 'ExportController@test')->name('export_test');
 
     Route::get('/test', 'TestController@test')->name('test');
 
