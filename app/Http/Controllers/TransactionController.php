@@ -8,6 +8,7 @@ use App\Http\Requests\EditTransactionFormRequest;
 use App\Transaction;
 use App\Repository\TransactionEloquentRepository;
 use App\Repository\WalletEloquentRepository;
+use App\Repository\CategoryEloquentRepository;
 use App\Wallet;
 use App\Category;
 
@@ -19,11 +20,13 @@ class TransactionController extends Controller
 
     public function __construct(
         TransactionEloquentRepository $transactionRepo, 
-        WalletEloquentRepository $walletRepo
+        WalletEloquentRepository $walletRepo,
+        CategoryEloquentRepository $catRepo
     )
     {
         $this->transactionRepo = $transactionRepo;
         $this->walletRepo = $walletRepo;
+        $this->catRepo = $catRepo;
     }
 
     /**
@@ -44,7 +47,9 @@ class TransactionController extends Controller
     public function create()
     {
         $cat = Category::where('user_id', auth()->user()->id)->get();
-        $wallet = $this->walletRepo->getAll();
+        $wallet = $this->walletRepo->query()
+                                    ->where('delete_flag', null)
+                                    ->get();
         return view('transaction.create', compact('cat', 'wallet'));
     }
 
@@ -111,8 +116,12 @@ class TransactionController extends Controller
      */
     public function edit($id)
     {
-        $cat = Category::where('user_id', auth()->user()->id)->get();
-        $wallet = $this->walletRepo->getAll();
+        $cat = $this->catRepo->query()
+                            ->where('delete_flag', null)
+                            ->get();
+        $wallet = $this->walletRepo->query()
+                                    ->where('delete_flag', null)
+                                    ->get();
         $trans = $this->transactionRepo->find($id);
         $type = $trans->category->type;
         return view('transaction.edit', compact('cat', 'wallet', 'trans', 'type'));
@@ -272,23 +281,22 @@ class TransactionController extends Controller
         switch ($type) {
             case 1: {
                 $wallet->balance = $wallet->balance - $transaction->amount;
-                $wallet->save();
                 break;
             }
             case 2: {
                 $wallet->balance = $wallet->balance - $transaction->amount;
-                $wallet->save();
                 break;
             }
             case 3: {
                 $benefit_wallet = $transaction->benefit_wallet_id;
                 $wallet->balance += $transaction->amount;
                 $benefit_wallet->balance = $benefit_wallet->balance - $transaction->amount;
-                $wallet->save();
                 $benefit_wallet->save();
                 break;
             }
         }
+        
+        $wallet->save();
 
         $transaction->delete_flag = 1;
         $transaction->save();
