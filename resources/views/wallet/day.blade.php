@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div class="col-lg-4 pr-0 d-flex justify-content-end">
-                        <span class="mt-auto mb-auto @if ($record['type'] == 1) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</span>
+                        <span class="mt-auto mb-auto @if ($record['type'] == 1 || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</span>
                     </div>
                 </a>
             </div>
