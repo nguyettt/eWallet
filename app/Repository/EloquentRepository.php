@@ -167,7 +167,8 @@ abstract class EloquentRepository implements RepositoryInterface {
      * @param array $id_arr
      * @return bool
      */
-    public function multiDelete(array $id_arr) {
+    public function multiDelete(array $id_arr)
+    {
         $result = $this->whereIn('id', $id_arr)->get();
         if ($result) {
             $result->delete();
@@ -177,13 +178,39 @@ abstract class EloquentRepository implements RepositoryInterface {
         return false;
     }
 
-    // /**
-    //  * Create an array of model objects
-    //  *
-    //  * @return array
-    //  */
-    // public function toArray()
-    // {
-    //     return $this->_model->get();
-    // }
+    /**
+     * Restore an item and all of its ancestors
+     *
+     * @param int $id
+     * @return void
+     */
+    public function restore($id)
+    {
+        $record = $this->find($id);
+
+        $record->delete_flag = null;
+        $record->save();
+
+        $deleted = $this->deleted();
+
+        foreach ($deleted as $item) {
+            if ($record->parent_id == $item->id) {
+                $this->restore($item->id);
+            }
+        }
+    }
+
+    /**
+     * Return a collection of all deleted items (records with delete_flag = 1) in db
+     *
+     * @return collection
+     */
+    public function deleted()
+    {
+        $deleted = $this->query()
+                        ->where('delete_flag', '<>', null)
+                        ->get();
+        
+        return $deleted;
+    }
 }
