@@ -26,4 +26,9 @@ class Wallet extends Model
     {
         return $this->hasMany('App\Transaction');
     }
+
+    public function transferTransaction()
+    {
+        return $this->hasMany('App\Transaction', 'benefit_wallet');
+    }
 }
