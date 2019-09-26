@@ -6,6 +6,21 @@
 
 @push('script')
     <script src="js/category.js"></script>
+    @error('delete')
+        <script>
+            $(function () {
+                alert("Can not delete default category");
+            })
+        </script>
+    @enderror
+
+    @error('edit')
+        <script>
+            $(function () {
+                alert("Can not edit dafault category");
+            })
+        </script>
+    @enderror
 @endpush
 
 @section('title')
