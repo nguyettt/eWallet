@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
 @push('script')
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
 @if ($inflow > 0 || $outflow > 0)
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
@@ -50,6 +49,11 @@
                 var _width = ($(window).width() - (48*2) - (48*2) - (20*2) - 320) / 2;
             }
             drawChart(_width);
+        })
+
+        $("#export").click(function (e) {
+            e.preventDefault();
+            $("#frmExport").submit();
         })
     })
 </script>
@@ -103,6 +107,7 @@
 
         <hr style="width: 100%">
 
+        @if($inflow > 0 || $outflow > 0)
         <div class="col-lg-12">
             <div class="row col-lg-12">
                 <div class="col-lg-6">
@@ -114,7 +119,7 @@
                         <a href="transaction/{{ $item->id }}" class="row col-lg-12 pr-0 text-dark">
                             <div class="col">
                                 <div class="col-lg-12">
-                                    <h6 class="mt-auto mb-auto">{{ date('H:i:s', strtotime($item->created_at)) }}</h6>
+                                    <h6 class="mt-auto mb-auto">{{ date('Y - m - d', strtotime($item->created_at)) }}</h6>
                                 </div>
                                 <div class="col-lg-12">
                                     <span class="mt-auto mb-auto h6">{{ $item->details }}</span>
@@ -137,7 +142,7 @@
                         <a href="transaction/{{ $item->id }}" class="row col-lg-12 pr-0 text-dark">
                             <div class="col">
                                 <div class="col-lg-12">
-                                    <h6 class="mt-auto mb-auto">{{ date('H:i:s', strtotime($item->created_at)) }}</h6>
+                                    <h6 class="mt-auto mb-auto">{{ date('Y - m - d', strtotime($item->created_at)) }}</h6>
                                 </div>
                                 <div class="col-lg-12">
                                     <span class="mt-auto mb-auto h6">{{ $item->details }}</span>
@@ -154,6 +159,25 @@
         </div>
 
         <hr style="width: 100%">
+
+        <div class="col-lg-12">
+            <div class="row col-lg-12">
+                <div class="col-lg-6">
+                    <form id="frmExport" method="POST" action="/export">
+                        @csrf
+                        <input type="hidden" name="time" value="{{ date('m-Y') }}"></input>
+                        <input type="hidden" name="wallet" value="all"></input>
+                        <input type="hidden" name="cat" value="all"></input>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <div class="col-lg-12 row p-3 justify-content-end">
+                        <a href="#" id="export" class="btn btn-success">Export data to excel file</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    @endif
 </div>
 @endsection
