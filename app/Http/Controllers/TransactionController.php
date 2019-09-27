@@ -35,8 +35,16 @@ class TransactionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
+    {      
+        $cat = $this->catRepo->query()
+                                ->where('delete_flag', null)
+                                ->get();
+
+        $wallet = $this->walletRepo->query()
+                                ->where('delete_flag', null)
+                                ->get();
+        
+        return view('transaction.index', compact('cat', 'wallet'));
     }
 
     /**
@@ -302,5 +310,44 @@ class TransactionController extends Controller
         $transaction->save();
 
         return redirect('/wallet/'.$wallet->id);
+    }
+
+    public function search (Request $request)
+    {
+        $wallet = $request->wallet;
+        $cat = $request->cat;
+        if ($request->start > $request->end) {
+            $start = $request->end;
+            $end = $request->start;
+        } else {
+            $start = $request->start;
+            $end = $request->end;
+        }
+        $transaction = $this->transactionRepo->query()
+                                            ->where('delete_flag', null)
+                                            ->where('created_at', '>', date('Y-m-d H:i:s', strtotime($start)))
+                                            ->where('created_at', '<', date('Y-m-d H:i:s', strtotime($end.' 24:00:00')));
+
+        if ($wallet != 'all') {
+            if ($cat == 'all' || $cat == 3) {
+                $transaction = $transaction->whereRaw("wallet_id = {$wallet} or benefit_wallet = {$wallet}");
+            } else {
+                $transaction = $transaction->where('wallet_id', $wallet);
+            }
+        }
+
+        if($cat != 'all') {
+            $transaction = $transaction->where('cat_id', $cat);
+
+        }
+
+        $transaction = $transaction->get();
+
+        $transaction = $transaction->sortBy(function ($item) {
+            return $item->created_at;
+        })->toArray();
+        
+        // dump($transaction);
+        return response()->json($transaction);
     }
 }
