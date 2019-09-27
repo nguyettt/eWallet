@@ -232,6 +232,10 @@ class WalletController extends Controller
     {
         $wallet = $this->walletRepo->find($id);
 
+        if ($wallet->name == 'Main Wallet') {
+            return back()->withErrors(['main_wallet' => 'Can not delete Main Wallet']);
+        }
+
         if ($wallet->transaction()->count() == 0 && $wallet->transferTransaction()->count() == 0) {
             $wallet->delete();
         } else {
