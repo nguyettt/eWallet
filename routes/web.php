@@ -88,6 +88,8 @@ Route::middleware('verified')->group(function () {
 
     Route::group(['prefix' => 'transaction', 'as' => 'transaction.'], function () {
 
+        Route::get('/', 'TransactionController@index')->name('index');
+
         Route::get('create', 'TransactionController@create')->name('create');
 
         Route::post('/', 'TransactionController@store')->name('store');
@@ -99,11 +101,14 @@ Route::middleware('verified')->group(function () {
         Route::put('/{id}', 'TransactionController@update')->name('update');
 
         Route::delete('/{id}', 'TransactionController@destroy')->name('delete');
+
+        Route::post('/search', 'TransactionController@search')->name('search');
+
     });
 
     Route::post('/export', 'ExportController@export')->name('export');
 
-    Route::get('/export', 'ExportController@test')->name('export_test');
+    // Route::get('/export', 'ExportController@test')->name('export_test');
 
     Route::get('/test', 'TestController@test')->name('test');
 
