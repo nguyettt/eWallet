@@ -22,7 +22,7 @@
             <td>{{ $item['type'] }}</td>
             <td>{{ $item['details'] }}</td>
             <td>{{ $item['amount'] }}</td>
-            <td>{{ $item['benefit_wallet_name'] }}</td>
+            <td>{{ $item['benefit_wallet'] }}</td>
             <td>{{ $item['created_at'] }}</td>
             <td>{{ $item['updated_at'] }}</td>
             <td>{{ $item['delete_flag'] }}</td>
