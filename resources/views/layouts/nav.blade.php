@@ -65,7 +65,10 @@
         Categories
     </a>
 
-    <a href="#" data-toggle="collapse" data-target="#transaction" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
+    <a href="transaction" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
+        Transactions
+    </a>
+    {{-- <a href="#" data-toggle="collapse" data-target="#transaction" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Transactions
     </a>
 
@@ -122,7 +125,7 @@
                 </div>
             </li>
         </ul>
-    </div>
+    </div> --}}
 
     <a href="#" data-toggle="collapse" data-target="#setting" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Setting
