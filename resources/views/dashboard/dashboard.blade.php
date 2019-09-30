@@ -85,16 +85,16 @@
             <div class="col p-0 d-flex align-items-center">
                 <div class="col-lg-12">
                     <div class="row col-lg-12 justify-content-end p-3">
-                        <h4 class="text-dark">Starting balance: {{ number_format($startingBalance, 2) }} đ</h4>
+                        <h4 class="text-dark">Starting balance: {{ number_format($startingBalance) }} đ</h4>
                     </div>
                     <div class="row col-lg-12 justify-content-end p-3">
-                        <h4 class="text-dark">Ending balance: {{ number_format($balance, 2) }} đ</h4>
+                        <h4 class="text-dark">Ending balance: {{ number_format($balance) }} đ</h4>
                     </div>
                     <div class="row col-lg-12 justify-content-end p-3">
-                        <h4 class="text-success">Inflow: {{ number_format($inflow, 2) }} đ</h4>
+                        <h4 class="text-success">Inflow: {{ number_format($inflow) }} đ</h4>
                     </div>
                     <div class="row col-lg-12 justify-content-end p-3">
-                        <h4 class="text-danger">Outflow: {{ number_format($outflow, 2) }} đ</h4>
+                        <h4 class="text-danger">Outflow: {{ number_format($outflow) }} đ</h4>
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@
                                 </div>
                             </div>
                             <div class="col pr-0 d-flex justify-content-end">
-                                <h5 class="mt-auto mb-auto text-success">{{ number_format($item->amount, 2) }} đ</h5>
+                                <h5 class="mt-auto mb-auto text-success">{{ number_format($item->amount) }} đ</h5>
                             </div>
                         </a>
                     </div>
@@ -149,7 +149,7 @@
                                 </div>
                             </div>
                             <div class="col pr-0 d-flex justify-content-end">
-                                <h5 class="mt-auto mb-auto text-danger">{{ number_format($item->amount, 2) }} đ</h5>
+                                <h5 class="mt-auto mb-auto text-danger">{{ number_format($item->amount) }} đ</h5>
                             </div>
                         </a>
                     </div>

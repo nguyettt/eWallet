@@ -34,11 +34,11 @@
                 <table class="table table-borderless">
                     <tr>
                         <th>Inflow</th>
-                        <td><h4 class="float-right text-success">{{ number_format($flow['in'], 2) }} đ</p></h4>
+                        <td><h4 class="float-right text-success">{{ number_format($flow['in']) }} đ</p></h4>
                     </tr>
                     <tr>
                         <th>Outflow</th>
-                        <td><h4 class="float-right text-danger">{{ number_format($flow['out'], 2) }} đ</p></h4>
+                        <td><h4 class="float-right text-danger">{{ number_format($flow['out']) }} đ</p></h4>
                     </tr>
                 </table>
             </div>
@@ -57,9 +57,9 @@
                         </div>
                         <div class="col-lg-4 pr-0 d-flex justify-content-end">
                             @if (isset($wallet))
-                                <h5 class="mt-auto mb-auto @if ($record['type'] == 1 || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</h5>
+                                <h5 class="mt-auto mb-auto @if ($record['type'] == 1 || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount']) }} đ</h5>
                             @else
-                            <h5 class="mt-auto mb-auto @if ($record['type'] == 1) text-success @else text-danger @endif">{{ number_format($record['amount'], 2) }} đ</h5>
+                            <h5 class="mt-auto mb-auto @if ($record['type'] == 1) text-success @else text-danger @endif">{{ number_format($record['amount']) }} đ</h5>
                             @endif
                         </div>
                     </a>

@@ -36,7 +36,7 @@
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
         @if (isset($wallet))
         <div class="card-body">
-            <h3>Balance: {{ number_format($wallet->balance, 2) }} đ</h3>
+            <h3>Balance: {{ number_format($wallet->balance) }} đ</h3>
         </div>
         @endif
 
@@ -58,11 +58,11 @@
                 <table class="table table-borderless">
                     <tr>
                         <th>Inflow</th>
-                        <td><h4 class="float-right text-success">{{ number_format($flow['in'], 2) }} đ</p></h4>
+                        <td><h4 class="float-right text-success">{{ number_format($flow['in']) }} đ</p></h4>
                     </tr>
                     <tr>
                         <th>Outflow</th>
-                        <td><h4 class="float-right text-danger">{{ number_format($flow['out'], 2) }} đ</p></h4>
+                        <td><h4 class="float-right text-danger">{{ number_format($flow['out']) }} đ</p></h4>
                     </tr>
                 </table>
             </div>
@@ -86,7 +86,7 @@
                 </div>
                 <div class="col-lg-4 p-0 d-flex">                    
                     <div class="col-lg-12 p-0 mt-auto mb-auto">
-                        <h5 class="@if ($item['sum'] < 0) text-danger @else text-success @endif d-flex justify-content-end">{{ number_format(abs($item['sum']), 2) }} đ</h5>
+                        <h5 class="@if ($item['sum'] < 0) text-danger @else text-success @endif d-flex justify-content-end">{{ number_format(abs($item['sum'])) }} đ</h5>
                     </div>
                 </div>
             </div>

@@ -52,7 +52,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <h3 class="@if ($trans->category->type == 1) text-primary @else text-danger @endif">{{ number_format($trans->amount, 2) }} đ</h3>
+                        <h3 class="@if ($trans->category->type == 1) text-primary @else text-danger @endif">{{ number_format($trans->amount) }} đ</h3>
                     </td>
                 </tr>
                 <tr>

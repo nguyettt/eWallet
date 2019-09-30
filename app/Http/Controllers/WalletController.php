@@ -289,6 +289,6 @@ class WalletController extends Controller
     public function getBalance(Request $request)
     {
         $wallet = $this->walletRepo->find($request->id);
-        return response()->json(number_format($wallet->balance, 2));
+        return response()->json(number_format($wallet->balance));
     }
 }
