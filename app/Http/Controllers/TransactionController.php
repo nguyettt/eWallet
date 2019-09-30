@@ -328,26 +328,52 @@ class TransactionController extends Controller
                                             ->where('created_at', '>', date('Y-m-d H:i:s', strtotime($start)))
                                             ->where('created_at', '<', date('Y-m-d H:i:s', strtotime($end.' 24:00:00')));
 
+        $_transaction = $this->transactionRepo->query()
+                                            ->where('delete_flag', null)
+                                            ->where('created_at', '>', date('Y-m-d H:i:s', strtotime($start)))
+                                            ->where('created_at', '<', date('Y-m-d H:i:s', strtotime($end.' 24:00:00')));
+
         if ($wallet != 'all') {
-            if ($cat == 'all' || $cat == 3) {
-                $transaction = $transaction->whereRaw("wallet_id = {$wallet} or benefit_wallet = {$wallet}");
-            } else {
-                $transaction = $transaction->where('wallet_id', $wallet);
-            }
+            $transaction = $transaction->where('wallet_id', $wallet);
+            $_transaction = $_transaction->where('benefit_wallet', $wallet);
         }
 
-        if($cat != 'all') {
-            $transaction = $transaction->where('cat_id', $cat);
-
+        if ($cat != 'all') {
+            $cat_list = $this->findChild($cat);
+            $transaction = $transaction->whereIn('cat_id', $cat_list);
         }
 
-        $transaction = $transaction->get();
+        if ($cat == 'all' || $cat == 3) {
+            $_transaction = $_transaction->where('benefit_wallet', '<>', null);
+            $transaction = $transaction->union($_transaction)->get();
+        } else {
+            $transaction = $transaction->get();
+        }
 
         $transaction = $transaction->sortBy(function ($item) {
             return $item->created_at;
-        })->toArray();
+        });
         
         // dump($transaction);
         return response()->json($transaction);
+    }
+
+    public function findChild ($parent)
+    {
+        $_child = $this->catRepo->query()->where('parent_id', $parent)->get();
+
+        if ($_child->count() > 0) {
+            foreach ($_child as $item) {
+                $child[] = $item->id;
+                $new = $this->findChild($item->id);
+                if ($new != null) {
+                    $child = array_merge($child, $new);
+                }
+            }
+        } else {
+            $child = null;
+        }
+
+        return $child;
     }
 }

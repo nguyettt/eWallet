@@ -18,7 +18,8 @@ $(function () {
             success: function (data) {
                 var html = "";
                 // var data = JSON.parse(obj);
-                data.forEach (function (item) {
+                Object.keys(data).forEach (function (key) {
+                    var item = data[key];
                     var date = item.created_at.split(" ")[0];
                     var details = item.details;
                     var amount = item.amount;
