@@ -339,7 +339,10 @@ class TransactionController extends Controller
         }
 
         if ($cat != 'all') {
-            $cat_list = $this->findChild($cat);
+            $cat_list[] = $cat;
+            if ($this->catRepo->findChild($cat)) {
+                $cat_list = array_merge($cat_list, $this->catRepo->findChild($cat));
+            }
             $transaction = $transaction->whereIn('cat_id', $cat_list);
         }
 
@@ -354,26 +357,6 @@ class TransactionController extends Controller
             return $item->created_at;
         });
         
-        // dump($transaction);
         return response()->json($transaction);
-    }
-
-    public function findChild ($parent)
-    {
-        $_child = $this->catRepo->query()->where('parent_id', $parent)->get();
-
-        if ($_child->count() > 0) {
-            foreach ($_child as $item) {
-                $child[] = $item->id;
-                $new = $this->findChild($item->id);
-                if ($new != null) {
-                    $child = array_merge($child, $new);
-                }
-            }
-        } else {
-            $child = null;
-        }
-
-        return $child;
     }
 }

@@ -4,6 +4,10 @@
     <script src="js/search.js"></script>
 @endpush
 
+@push('style')
+    <link rel="stylesheet" href="css/transaction.css"></link>
+@endpush
+
 @section('title')
     Transactions
 @endsection
@@ -69,6 +73,9 @@
             <div id="result" class="col-lg-12">
                 
             </div>
+            {{-- <div id="export" class="col-lg-12" style="display:none">
+                <a href="#" class="btn btn-success float-right">Export</a>
+            </div> --}}
         </div>
     </div>
 </div>

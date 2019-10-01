@@ -5,3 +5,11 @@
 .table tr td span {
     font-size: 110%;
 }
+
+.transaction {
+    text-decoration: none;
+}
+
+.transaction:hover {
+    text-decoration: none;
+}
