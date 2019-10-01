@@ -102,7 +102,18 @@ class CategoryController extends Controller
     {
         $cat = $this->catRepo->find($id);
 
-        $cats = $this->catRepo->getAll();
+        $list[] = $id;
+
+        $child = $this->catRepo->findChild($id) ;
+
+        if ($child != null) {
+            $list = array_merge($list, $child);
+        }
+
+        $cats = $this->catRepo->query()
+                            ->whereNotIn('id', $list)
+                            ->where('type', $cat->type)
+                            ->get();
 
         if ($cat->parent_id == 0) {
             
@@ -111,6 +122,8 @@ class CategoryController extends Controller
         }
 
         return view('cat.edit', compact('cat', 'cats'));
+
+        // dump($cats->toArray());
     }
 
     /**

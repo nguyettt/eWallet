@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@push('script')
+{{-- @push('script')
 <script src="js/category.js"></script>
-@endpush
+@endpush --}}
 
 @section('title')
     Edit {{ $cat->name }}
@@ -40,31 +40,13 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="type" class="col-md-4 col-form-label text-md-right">{{ __('Type') }}</label>
-
-                    <div class="col-md-6">
-                        <select id="type" name="type" class="form-control @error('type') is-invalid @enderror" required>
-                            <option value="" disabled hidden selected>Select</option>
-                            <option value="1" {{ (old('type')) ? (old('type') == '1' ? 'selected' : '') : ($cat->type == 1 ? 'selected' : '') }}>Income</option>
-                            <option value="2" {{ (old('type')) ? (old('type') == '2' ? 'selected' : '') : ($cat->type == 2 ? 'selected' : '') }}>Expense</option>
-                        </select>
-
-                        @error('type')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="form-group row">
                     <label for="parent_id" class="col-md-4 col-form-label text-md-right">{{ __('Parent category') }}</label>
 
                     <div class="col-md-6">
                         <select id="parent_id" name="parent_id" class="form-control @error('parent_id') is-invalid @enderror" required>
                             <option value="" disabled hidden selected>Select</option>
                             @foreach ($cats as $_cat)
-                                <option class="{{ $_cat->type }}" style="display:none" 
+                                <option 
                                     value="{{ $_cat->id }}" {{ (old('parent_id')) ? (old('parent_id') == $_cat->id ? 'selected' : '') : ($cat->parent_id == $_cat->id ? 'selected' : '') }}>{{ $_cat->name }}
                                 </option>
                             @endforeach
