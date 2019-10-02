@@ -59,4 +59,23 @@ class CategoryEloquentRepository extends EloquentRepository {
 
         return $child;
     }
+
+    public function restore($id)
+    {
+        $record = $this->find($id);
+
+        $parent = $this->find($record->parent_id);
+
+        if ($parent->delete_flag != null) {
+            $parent = $this->query()
+                            ->where('type', $record->type)
+                            ->where('parent_id', 0)
+                            ->first();
+            $record->parent_id = $parent->id;
+        }
+
+        $record->delete_flag = null;
+
+        $record->save();
+    }
 }

@@ -191,13 +191,13 @@ abstract class EloquentRepository implements RepositoryInterface {
         $record->delete_flag = null;
         $record->save();
 
-        $deleted = $this->deleted();
+        // $deleted = $this->deleted();
 
-        foreach ($deleted as $item) {
-            if ($record->parent_id == $item->id) {
-                $this->restore($item->id);
-            }
-        }
+        // foreach ($deleted as $item) {
+        //     if ($record->parent_id == $item->id) {
+        //         $this->restore($item->id);
+        //     }
+        // }
     }
 
     /**
