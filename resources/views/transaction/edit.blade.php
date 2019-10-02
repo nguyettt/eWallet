@@ -62,7 +62,7 @@ function type_select () {
         </div>
 
         <div class="card-body">
-            <form method="POST" action="/transaction/{{ $trans->id }}">
+            <form id="frmTransaction" method="POST" action="/transaction/{{ $trans->id }}">
                 @csrf
                 @method('PUT')
                 <div class="form-group row">
@@ -102,7 +102,7 @@ function type_select () {
                         <select id="type" name="type" class="form-control @error('type') is-invalid @enderror" required>
                             <option value="" disabled hidden selected>Select</option>
                             <option value="{{ config('variable.type.income') }}" @if (old('type')) {{ old('type') == config('variable.type.income') ? 'selected' : ''}} @else {{ $type == 1 ? 'selected' : '' }} @endif>Income</option>
-                            <option value="{{ config('variable.type.outcome') }}c" @if (old('type')) {{ old('type') == config('variable.type.outcome') ? 'selected' : ''}} @else {{ $type == 2 ? 'selected' : '' }} @endif>Expense</option>
+                            <option value="{{ config('variable.type.outcome') }}" @if (old('type')) {{ old('type') == config('variable.type.outcome') ? 'selected' : ''}} @else {{ $type == 2 ? 'selected' : '' }} @endif>Expense</option>
                             <option value="{{ config('variable.type.transfer') }}" @if (old('type')) {{ old('type') == config('variable.type.transfer') ? 'selected' : ''}} @else {{ $type == 3 ? 'selected' : '' }} @endif>Transfer to another wallet</option>
                         </select>
 
@@ -186,7 +186,7 @@ function type_select () {
 
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4">
-                        <button type="submit" class="btn btn-primary">
+                        <button id="btnSubmit" type="button" class="btn btn-primary">
                             {{ __('Save') }}
                         </button>
                     </div>

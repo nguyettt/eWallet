@@ -11,6 +11,15 @@ $(function () {
     $("#wallet_id").change(function () {
         getBalance();
     })
+
+    $("#btnSubmit").click(function () {
+        var amount = $("#amount").val();
+        if (amount != "") {
+            amount = amount.replace(/\,/g, '');
+        }
+        $("#amount").val(amount);
+        $("#frmTransaction").submit();
+    })
 })
 
 function getBalance () {
@@ -29,7 +38,7 @@ function getBalance () {
 function number_format() {
     var num = $("#amount").val();
     if (num != '') {
-        num = num.replace(/\./g, '');
+        num = num.replace(/\,/g, '');
         num = parseInt(num).toLocaleString('en');
     }
     $("#amount").val(num);

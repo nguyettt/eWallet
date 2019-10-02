@@ -62,7 +62,7 @@ function type_select () {
         </div>
 
         <div class="card-body">
-            <form method="POST" action="transaction">
+            <form id="frmTransaction" method="POST" action="transaction">
                 @csrf
                 <div class="form-group row">
                     <label for="amount" class="col-md-4 col-form-label text-md-right">{{ __('Amount') }}</label>
@@ -184,7 +184,7 @@ function type_select () {
 
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4">
-                        <button type="submit" class="btn btn-primary">
+                        <button id="btnSubmit" type="button" class="btn btn-primary">
                             {{ __('Create') }}
                         </button>
                     </div>
