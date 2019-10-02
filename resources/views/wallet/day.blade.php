@@ -57,9 +57,9 @@
                         </div>
                         <div class="col-lg-4 pr-0 d-flex justify-content-end">
                             @if (isset($wallet))
-                                <h5 class="mt-auto mb-auto @if ($record['type'] == 1 || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount']) }} đ</h5>
+                                <h5 class="mt-auto mb-auto @if ($record['type'] == config('variable.type.income') || $record['benefit_wallet'] == $wallet->id) text-success @else text-danger @endif">{{ number_format($record['amount']) }} đ</h5>
                             @else
-                            <h5 class="mt-auto mb-auto @if ($record['type'] == 1) text-success @else text-danger @endif">{{ number_format($record['amount']) }} đ</h5>
+                            <h5 class="mt-auto mb-auto @if ($record['type'] == config('variable.type.income')) text-success @else text-danger @endif">{{ number_format($record['amount']) }} đ</h5>
                             @endif
                         </div>
                     </a>

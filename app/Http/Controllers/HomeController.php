@@ -50,7 +50,7 @@ class HomeController extends Controller
             ->get();
 
         foreach ($transaction as $item) {
-            if ($item->type == 1) {
+            if ($item->type == config('variable.type.income')) {
                 $inflow += $item->amount;
             } else {
                 $outflow += $item->amount;
@@ -102,7 +102,7 @@ class HomeController extends Controller
         $startingBalance = 0;
 
         foreach ($_transaction as $item) {
-            if ($item->type == 1) {
+            if ($item->type == config('variable.type.income')) {
                 $startingBalance += $item->amount;
             } else {
                 $startingBalance -= $item->amount;

@@ -68,64 +68,6 @@
     <a href="transaction" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Transactions
     </a>
-    {{-- <a href="#" data-toggle="collapse" data-target="#transaction" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
-        Transactions
-    </a>
-
-    <div id="transaction" class="collapse">
-        <ul class="nav flex-column bg-white mb-0">
-            <li class="nav-item">
-                <div class="nav-link">
-                    <a href="cat/income" class="text-dark font-italic">
-                        <i class="fas fa-money-bill-alt mr-3 text-success fa-fw"></i>
-                        Income                    
-                    </a>
-                    <i class="fas fa-sort-down mr-3 text-success fa-fw float-right" data-toggle="collapse" data-target="#income" style="cursor:pointer"></i>
-                </div>
-                <div id="income" class="collapse">
-                    <ul class="navv flex-column bg-white mb-0">
-                    @foreach ($income as $item)
-                        <li class="nav-item">
-                            <a href="cat/{{ $item->id }}" class="nav-link text-dark font-italic pl-0">
-                                <i class="fas fa-circle mr-3 text-success fa-fw" ></i>
-                                {{ $item->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-link">
-                    <a href="cat/outcome" class="text-dark font-italic">
-                        <i class="fas fa-money-bill-alt mr-3 text-danger fa-fw"></i>
-                        Outcome
-                    </a>
-                    <i class="fas fa-sort-down mr-3 text-danger fa-fw float-right" data-toggle="collapse" data-target="#outcome" style="cursor:pointer"></i>
-                </div>
-                <div id="outcome" class="collapse">
-                    <ul class="navv flex-column bg-white mb-0">
-                    @foreach ($outcome as $item)
-                    <li class="nav-item">
-                        <a href="cat/{{ $item->id }}" class="nav-link text-dark font-italic pl-0">
-                            <i class="fas fa-circle mr-3 text-danger fa-fw" ></i>
-                            {{ $item->name }}
-                        </a>
-                    </li>
-                    @endforeach
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-link">
-                    <a href="cat/transfer" class="text-dark font-italic">
-                        <i class="fas fa-exchange-alt mr-3 text-info fa-fw"></i>
-                        Transfer
-                    </a>
-                </div>
-            </li>
-        </ul>
-    </div> --}}
 
     <a href="#" data-toggle="collapse" data-target="#setting" class="nav-link text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">
         Setting

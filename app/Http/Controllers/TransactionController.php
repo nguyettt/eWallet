@@ -75,17 +75,17 @@ class TransactionController extends Controller
                                     ->toArray();
 
         switch ($data['type']) {
-            case 1: {
+            case config('variable.type.income'): {
                 $wallet['balance'] += $data['amount'];
                 unset($data['benefit_wallet']);
                 break;
             }
-            case 2: {
+            case config('variable.type.outcome'): {
                 $wallet['balance'] = $wallet['balance'] - $data['amount'];
                 unset($data['benefit_wallet']);
                 break;
             }
-            case 3: {
+            case config('variable.type.transfer'): {
                 $benefit_wallet = $this->walletRepo->find($data['benefit_wallet'])
                                                     ->toArray();
                 $wallet['balance'] = $wallet['balance'] - $data['amount'];
@@ -161,12 +161,12 @@ class TransactionController extends Controller
             $new_wallet = $this->walletRepo->find($data['wallet_id']);
         
             switch ($type) {
-                case 1: {
+                case config('variable.type.income'): {
                     $wallet->balance -= $transaction->amount;
                     break;
                 }
-                case 2:
-                case 3: {
+                case config('variable.type.outcome'):
+                case config('variable.type.transfer'): {
                     $wallet->balance += $transaction->amount;
                     break;
                 }
@@ -174,17 +174,17 @@ class TransactionController extends Controller
             $wallet->save();
 
             switch($data['type']) {
-                case 1: {
+                case config('variable.type.income'): {
                     $new_wallet->balance += $data['amount'];
                     $data['benefit_wallet'] = null;
                     break;
                 }
-                case 2: {
+                case config('variable.type.outcome'): {
                     $new_wallet->balance -= $data['amount'];
                     $data['benefit_wallet'] = null;
                     break;
                 }
-                case 3: {
+                case config('variable.type.transfer'): {
                     $new_wallet->balance -= $data['amount'];
                     break;
                 }
@@ -215,29 +215,29 @@ class TransactionController extends Controller
         } else {
 
             switch ($type) {
-                case 1: {
+                case config('variable.type.income'): {
                     $wallet->balance -= $transaction->amount;
                     break;
                 }
-                case 2:
-                case 3: {
+                case config('variable.type.outcome'):
+                case config('variable.type.transfer'): {
                     $wallet->balance += $transaction->amount;
                     break;
                 }
             }
 
             switch($data['type']) {
-                case 1: {
+                case config('variable.type.income'): {
                     $wallet->balance += $data['amount'];
                     $data['benefit_wallet'] = null;
                     break;
                 }
-                case 2: {
+                case config('variable.type.outcome'): {
                     $wallet->balance -= $data['amount'];
                     $data['benefit_wallet'] = null;
                     break;
                 }
-                case 3: {
+                case config('variable.type.transfer'): {
                     $wallet->balance -= $data['amount'];
                     break;
                 }
@@ -287,15 +287,15 @@ class TransactionController extends Controller
         $type = $transaction->category->type;
 
         switch ($type) {
-            case 1: {
+            case config('variable.type.income'): {
                 $wallet->balance = $wallet->balance - $transaction->amount;
                 break;
             }
-            case 2: {
+            case config('variable.type.outcome'): {
                 $wallet->balance = $wallet->balance - $transaction->amount;
                 break;
             }
-            case 3: {
+            case config('variable.type.transfer'): {
                 $benefit_wallet = $transaction->benefit_wallet_id;
                 $wallet->balance += $transaction->amount;
                 $benefit_wallet->balance = $benefit_wallet->balance - $transaction->amount;
@@ -338,6 +338,10 @@ class TransactionController extends Controller
             $_transaction = $_transaction->where('benefit_wallet', $wallet);
         }
 
+        $transfer = $this->catRepo->query()
+                                ->where('type', config('variable.type.transfer'))
+                                ->first()
+                                ->id;
         if ($cat != 'all') {
             $cat_list[] = $cat;
             if ($this->catRepo->findChild($cat)) {
@@ -346,7 +350,7 @@ class TransactionController extends Controller
             $transaction = $transaction->whereIn('cat_id', $cat_list);
         }
 
-        if ($cat == 'all' || $cat == 3) {
+        if ($cat == 'all' || $cat == $transfer) {
             $_transaction = $_transaction->where('benefit_wallet', '<>', null);
             $transaction = $transaction->union($_transaction)->get();
         } else {

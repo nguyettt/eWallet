@@ -133,7 +133,7 @@ class WalletController extends Controller
                     $records[$date]['sum'] = 0;
                 }
                 
-                if ($item->type == 1 || $item->benefit_wallet == $id) {
+                if ($item->type == config('variable.type.income') || $item->benefit_wallet == $id) {
                     $flow['in'] += $item->amount;
                     $records[$date]['sum'] += $item->amount;
                 } else {
@@ -172,7 +172,7 @@ class WalletController extends Controller
             }
 
             foreach ($transaction as $item) {
-                if ($item->type == 1 || $item->benefit_wallet == $id) {
+                if ($item->type == config('variable.type.income') || $item->benefit_wallet == $id) {
                     $flow['in'] += $item->amount;
                 } else {
                     $flow['out'] -= $item->amount;
@@ -251,17 +251,12 @@ class WalletController extends Controller
                 $main_wallet->balance += $wallet->balance;
                 $main_wallet->save();
 
-                $transaction['user_id'] = auth()->user()->id;
-                $transaction['wallet_id'] = $id;
-                $transaction['cat_id'] = $this->catRepo->query()->where('type', 3)->first()->id;
-                $transaction['type'] = 3;
-
                 $transaction = [
                     'user_id' => auth()->user()->id,
                     'wallet_id' => $id,
-                    'cat_id' => $this->catRepo->query()->where('type', 3)->first()->id,
+                    'cat_id' => $this->catRepo->query()->where('type', config('variable.type.transfer'))->first()->id,
                     'details' => 'Transfer from '.$wallet->name.' to Main Wallet',
-                    'type' => 3,
+                    'type' => config('variable.type.transfer'),
                     'amount' => $wallet->balance,
                     'benefit_wallet' => $main_wallet->id
                 ];

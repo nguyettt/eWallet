@@ -1,6 +1,52 @@
 @extends('layouts.app')
 
 @push('script')
+<script>
+function type_select () {
+    var type = $("#type").val();
+    var income = {{ config('variable.type.income') }};
+    var outcome = {{ config('variable.type.outcome') }};
+    var transfer = {{ config('variable.type.transfer') }};
+    switch (type) {
+        case ''+income: {
+            $("."+income).css("display", "block");
+            $("."+outcome).css("display", "none");
+            $("."+transfer).css("display", "none");
+            $(".benefit_wallet_block").css("display", "none");
+            $(".cat").css("display", "flex");
+            $("#cat_id").val("");
+            break;
+        }
+        case ''+outcome: {
+            $("."+income).css("display", "none");
+            $("."+outcome).css("display", "block");
+            $("."+transfer).css("display", "none");
+            $(".benefit_wallet_block").css("display", "none");
+            $(".cat").css("display", "flex");
+            $("#cat_id").val("");
+            break;
+        }
+        case ''+transfer: {
+            $("."+income).css("display", "none");
+            $("."+outcome).css("display", "none");
+            $("."+transfer).css("display", "block");
+            $(".benefit_wallet_block").css("display", "flex");
+            $(".cat").css("display", "none");
+            $("#cat_id").val($(".3").val());
+            break;
+        }
+        default: {
+            $("."+income).css("display", "none");
+            $("."+outcome).css("display", "none");
+            $("."+transfer).css("display", "none");
+            $(".benefit_wallet_block").css("display", "none");
+            $(".cat").css("display", "flex");
+            $("#cat_id").val("");
+            break;
+        }
+    }
+}
+</script>
 <script src="js/transaction.js"></script>
 @endpush
 
@@ -24,7 +70,7 @@
 
                     <div class="col-md-6">
                         <input id="amount" type="text" class="form-control @error('amount') is-invalid @enderror"
-                            name="amount" value="@if (old('amount')) {{ old('amount') }} @else {{ $trans->amount }} @endif" required autocomplete="amount" autofocus>
+                            name="amount" value="@if (old('amount')) {{ old('amount') }} @else {{ $trans->amount }} @endif" required autocomplete="amount" autofocus onkeyup="number_format()">
 
                         @error('amount')
                         <span class="invalid-feedback" role="alert">
@@ -55,9 +101,9 @@
                     <div class="col-md-6">
                         <select id="type" name="type" class="form-control @error('type') is-invalid @enderror" required>
                             <option value="" disabled hidden selected>Select</option>
-                            <option value="1" @if (old('type')) {{ old('type') == 1 ? 'selected' : ''}} @else {{ $type == 1 ? 'selected' : '' }} @endif>Income</option>
-                            <option value="2" @if (old('type')) {{ old('type') == 2 ? 'selected' : ''}} @else {{ $type == 2 ? 'selected' : '' }} @endif>Expense</option>
-                            <option value="3" @if (old('type')) {{ old('type') == 3 ? 'selected' : ''}} @else {{ $type == 3 ? 'selected' : '' }} @endif>Transfer to another wallet</option>
+                            <option value="{{ config('variable.type.income') }}" @if (old('type')) {{ old('type') == config('variable.type.income') ? 'selected' : ''}} @else {{ $type == 1 ? 'selected' : '' }} @endif>Income</option>
+                            <option value="{{ config('variable.type.outcome') }}c" @if (old('type')) {{ old('type') == config('variable.type.outcome') ? 'selected' : ''}} @else {{ $type == 2 ? 'selected' : '' }} @endif>Expense</option>
+                            <option value="{{ config('variable.type.transfer') }}" @if (old('type')) {{ old('type') == config('variable.type.transfer') ? 'selected' : ''}} @else {{ $type == 3 ? 'selected' : '' }} @endif>Transfer to another wallet</option>
                         </select>
 
                         @error('type')

@@ -11,6 +11,37 @@
         })
     </script>
 @endif
+<script>
+function type_select () {
+    type = $("#type").val();
+    var income = {{ config('variable.type.income') }};
+    var outcome = {{ config('variable.type.outcome') }};
+    var transfer = {{ config('variable.type.transfer') }};
+    switch (type) {
+        case ""+income: {
+            $("." + income).css("display", "block");
+            $("." + outcome).css("display", "none");
+            // $("." + transfer).css("display", "none");
+            $("#parent_id").val("");
+            break;
+        }
+        case ""+outcome: {
+            $("." + income).css("display", "none");
+            $("." + outcome).css("display", "block");
+            // $("." + transfer).css("display", "none");
+            $("#parent_id").val("");
+            break;
+        }
+        default: {
+            $("." + income).css("display", "none");
+            $("." + outcome).css("display", "none");
+            // $("." + transfer).css("display", "none");
+            $("#parent_id").val("");
+            break;
+        }
+    }
+}
+</script>
 @endpush
 
 @section('title')
@@ -48,8 +79,8 @@
                     <div class="col-md-6">
                         <select id="type" name="type" class="form-control @error('type') is-invalid @enderror" required>
                             <option value="" disabled hidden selected>Select</option>
-                            <option value="1" {{ old('type') == '1' ? 'selected' : '' }}>Income</option>
-                            <option value="2" {{ old('type') == '2' ? 'selected' : '' }}>Expense</option>
+                            <option value="{{ config('variable.type.income') }}" {{ old('type') == config('variable.type.income') ? 'selected' : '' }}>Income</option>
+                            <option value="{{ config('variable.type.outcome') }}" {{ old('type') == config('variable.type.outcome') ? 'selected' : '' }}>Expense</option>
                         </select>
 
                         @error('type')

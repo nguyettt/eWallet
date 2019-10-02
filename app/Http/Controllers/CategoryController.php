@@ -122,8 +122,6 @@ class CategoryController extends Controller
         }
 
         return view('cat.edit', compact('cat', 'cats'));
-
-        // dump($cats->toArray());
     }
 
     /**
@@ -239,11 +237,11 @@ class CategoryController extends Controller
 
         foreach ($array as $item) {
             switch ($item['type']) {
-                case 1: $color = 'text-success';
+                case config('variable.type.income'): $color = 'text-success';
                         break;
-                case 2: $color = 'text-danger';
+                case config('variable.type.outcome'): $color = 'text-danger';
                         break;
-                case 3: $color = 'text-info';
+                case config('variable.type.transfer'): $color = 'text-info';
                         break;
             }
             $hidden = ($item['parent_id'] == 0)?'hidden':'';
