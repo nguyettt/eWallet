@@ -107,7 +107,11 @@ Route::middleware('verified')->group(function () {
     });
 
     Route::post('/export', 'ExportController@export')->name('export');
+    
+    Route::post('/exportJSON', 'ExportController@exportJSON')->name('exportJSON');
 
+    Route::get('/export/{id}/{name}', 'ExportController@download')->name('download');
+    
     // Route::get('/export', 'ExportController@test')->name('export_test');
 
     Route::get('/test', 'TestController@test')->name('test');
