@@ -30,16 +30,12 @@ class EditCategoryFormRequest extends FormRequest
                         ->pluck('id')
                         ->all();
         return [
-            'type' => [
-                'required',
-                Rule::in([1, 2]),
-            ],
             'name' => [
                 'required',
                 Rule::unique('categories')->where(function ($query) {
                     return $query->where('user_id', auth()->user()->id)
                                 ->where('delete_flag', null);
-                }),
+                })->ignore($this->id),
             ],
             'parent_id' => [
                 'required',
