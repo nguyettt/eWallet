@@ -25,17 +25,22 @@
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
         <div class="card-body row">
-            <div class="row col-lg-12 justify-content-end p-0">
-                <a href="transaction/{{ $trans->id }}/edit">
-                    <i class="fas fa-edit fa-fw text-primary mr-3"></i>
-                </a>
-                <a href="#" id="delete">
-                    <i class="fas fa-trash-alt fa-fw text-danger"></i>
-                </a>
-                <form id="delTransaction" method="POST" action="/transaction/{{ $trans->id }}">
-                    @csrf
-                    @method('DELETE')
-                </form>
+            <div class="row col-lg-12">
+                <div class="col-lg-2 p-0 d-flex justify-content-start">
+                    <a id="backLink" href="{{ url()->previous() }}" class="btn btn-success">Back</a>
+                </div>
+                <div class="row col-lg-10 justify-content-end p-0">
+                    <a href="transaction/{{ $trans->id }}/edit">
+                        <i class="fas fa-edit fa-fw text-primary mr-3"></i>
+                    </a>
+                    <a href="#" id="delete">
+                        <i class="fas fa-trash-alt fa-fw text-danger"></i>
+                    </a>
+                    <form id="delTransaction" method="POST" action="/transaction/{{ $trans->id }}">
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                </div>
             </div>
             <div class="row col-lg-12 p-3"></div>
             <table class="table table-borderless">

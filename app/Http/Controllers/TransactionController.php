@@ -112,6 +112,7 @@ class TransactionController extends Controller
     public function show($id)
     {
         $trans = $this->transactionRepo->find($id);
+        // $url = preg_replace('/(\/[0-9]+)/', '', url()->current());
 
         return view('transaction.show', compact('trans'));
     }
@@ -132,7 +133,8 @@ class TransactionController extends Controller
                                     ->get();
         $trans = $this->transactionRepo->find($id);
         $type = $trans->category->type;
-        return view('transaction.edit', compact('cat', 'wallet', 'trans', 'type'));
+        $url = str_replace('/edit', '', url()->current());
+        return view('transaction.edit', compact('cat', 'wallet', 'trans', 'type', 'url'));
     }
 
     /**

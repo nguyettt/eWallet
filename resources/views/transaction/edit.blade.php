@@ -58,7 +58,12 @@ function type_select () {
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
         <div class="card-header row justify-content-center">
-            <h5 class="font-weight-bold">{{ __('Edit Transaction') }}</h5>
+            <div class="col-lg-2 p-0 d-flex justify-content-start">
+                <a id="backLink" href="{{ $url }}" class="btn btn-success">Back</a>
+            </div>
+            <div class="col-lg-8 d-flex justify-content-center">
+                <h5 class="font-weight-bold">{{ __('Edit Transaction') }}</h5>
+            </div>
         </div>
 
         <div class="card-body">
