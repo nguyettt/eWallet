@@ -73,9 +73,6 @@
             <div id="result" class="col-lg-12">
                 
             </div>
-            {{-- <div id="export" class="col-lg-12" style="display:none">
-                <a href="#" class="btn btn-success float-right">Export</a>
-            </div> --}}
         </div>
     </div>
 </div>

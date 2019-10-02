@@ -8,6 +8,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Repository\WalletEloquentRepository;
 use App\Repository\CategoryEloquentRepository;
 use App\Repository\TransactionEloquentRepository;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ExportController extends Controller
 {
@@ -92,5 +95,40 @@ class ExportController extends Controller
         }
 
         return Excel::download(new TransactionExport($data), 'transaction.xlsx');
+    }
+
+    public function exportJSON(Request $request)
+    {
+        // $transaction = $request->json()->all();
+
+        $transaction = $request->data;
+
+        $wallet = $this->walletRepo->getAll();
+
+        $cat = $this->catRepo->getAll();
+
+        foreach ($transaction as $key => $item) {
+            $transaction[$key]['wallet'] = $wallet->where('id', $item['wallet_id'])->first()->name;
+            $transaction[$key]['cat'] = $cat->where('id', $item['cat_id'])->first()->name;
+        }
+
+        $filename = 'transaction-'.date('Ymd').'-'.time().'.xlsx';
+
+        Excel::store(new TransactionExport($transaction), $filename);
+
+        return $path = '/export/'.auth()->user()->id.'/'.$filename;
+    }
+
+    public function download(Request $request, $id, $name)
+    {
+        if (auth()->user()->id != $id) {
+            abort(404);
+        }
+
+        $url = $request->path();
+        $url = explode('/', $url)[2];
+        $path = base_path().'/storage/app/'.$url;
+
+        return response()->download($path)->deleteFileAfterSend();
     }
 }

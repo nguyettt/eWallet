@@ -39,7 +39,7 @@ function ajaxFilter() {
                     var item = data[key];
                     var date = item.created_at.split(" ")[0];
                     var details = item.details;
-                    var amount = item.amount;
+                    var amount = number_format(item.amount);
                     var id = item.id;
 
                     html += '<div class="col-lg-12 row pr-0">\n';
@@ -66,12 +66,38 @@ function ajaxFilter() {
                     html += '<hr style="width:100%">\n';
                 })
 
-                html += '<a href="#" class="btn btn-success float-right">Export</a>\n';
-
-                // $("#export").removeAttr("hidden");
+                html += '<form id="frmExport" method="POST" action="/exportJSON">\n';
+                html += '<input type="hidden" name="_token" value="' + $('meta[name="csrf-token"]').attr('content') + '">\n';
+                html += '<input id="exportData" name="json" type="hidden">\n';
+                html += '</form>';
+                html += '<button id="export" class="btn btn-success float-right">Export</button>\n';
             }
             
             $("#result").html(html);
+
+            $("#export").click(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    method: "POST",
+                    url: "/exportJSON",
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: {
+                        data: data,
+                    },
+                    success: function (url) {
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }
+                })
+            })
         }
     })
+}
+
+function number_format(num) {
+    return num.toLocaleString('en');
 }
