@@ -66,25 +66,7 @@ abstract class EloquentRepository implements RepositoryInterface {
     {
         return $this->query()->get();
     }
-
-    /**
-     * Search in model
-     *
-     * @param string $q
-     * @param int $page
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function search($q, $page) {
-        $q = str_replace(' ', '%', $q);
-        $q = '%'.$q.'%';
-        $raw = [];
-        foreach($this->_attributes as $attr) {
-            array_push($raw, "{$attr} like '{$q}'");
-        }
-        $raw = implode(' or ', $raw);
-        DB::statement(DB::raw("set @row:=($page - 1) * 20"));
-        return $this->_model->whereRaw($raw);
-    }
+    
     /**
      * Get one
      * @param $id
