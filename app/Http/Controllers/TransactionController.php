@@ -58,7 +58,14 @@ class TransactionController extends Controller
         $wallet = $this->walletRepo->query()
                                     ->where('delete_flag', null)
                                     ->get();
-        return view('transaction.create', compact('cat', 'wallet'));
+        $data = [
+            'income' => config('variable.type.income'),
+            'outcome' => config('variable.type.outcome'),
+            'transfer' => config('variable.type.transfer'),
+        ];
+        $data = json_encode($data);
+
+        return view('transaction.create', compact('cat', 'wallet', 'data'));
     }
 
     /**
@@ -70,32 +77,18 @@ class TransactionController extends Controller
     public function store(TransactionFormRequest $request)
     {    
         $data = $request->all();
+        $id = $data['wallet_id'];
+        $type = $data['type'];
+        $amount = $data['amount'];
 
-        $wallet = $this->walletRepo->find($data['wallet_id'])
-                                    ->toArray();
+        $this->updateWallet($id, $type, $amount);
 
-        switch ($data['type']) {
-            case config('variable.type.income'): {
-                $wallet['balance'] += $data['amount'];
-                unset($data['benefit_wallet']);
-                break;
-            }
-            case config('variable.type.outcome'): {
-                $wallet['balance'] = $wallet['balance'] - $data['amount'];
-                unset($data['benefit_wallet']);
-                break;
-            }
-            case config('variable.type.transfer'): {
-                $benefit_wallet = $this->walletRepo->find($data['benefit_wallet'])
-                                                    ->toArray();
-                $wallet['balance'] = $wallet['balance'] - $data['amount'];
-                $benefit_wallet['balance'] += $data['amount'];
-                $this->walletRepo->update($benefit_wallet['id'], $benefit_wallet);
-                break;
-            }
+        if ($type == config('variable.type.transfer')) {
+            $benefit_id = $data['benefit_wallet'];
+            $this->updateWallet($benefit_id, config('variable.type.income'), $amount);
+        } else {
+            unset($data['benefit_wallet']);
         }
-
-        $this->walletRepo->update($wallet['id'], $wallet);
         
         $data['user_id'] = auth()->user()->id;
         $this->transactionRepo->create($data);
@@ -134,7 +127,13 @@ class TransactionController extends Controller
         $trans = $this->transactionRepo->find($id);
         $type = $trans->category->type;
         $url = str_replace('/edit', '', url()->current());
-        return view('transaction.edit', compact('cat', 'wallet', 'trans', 'type', 'url'));
+        $data = [
+            'income' => config('variable.type.income'),
+            'outcome' => config('variable.type.outcome'),
+            'transfer' => config('variable.type.transfer'),
+        ];
+        $data = json_encode($data);
+        return view('transaction.edit', compact('cat', 'wallet', 'trans', 'type', 'url', 'data'));
     }
 
     /**
@@ -146,133 +145,37 @@ class TransactionController extends Controller
      */
     public function update(TransactionFormRequest $request, $id)
     {
-        $data = $request->all();
-
+        // Roll back old transaction
         $transaction = $this->transactionRepo->find($id);
+        $old_wallet = $transaction->wallet_id;
+        $old_type = $transaction->category->type;
+        $old_amount = $transaction->amount;
 
-        $wallet = $transaction->wallet;
+        $this->transactionRollback($old_wallet, $old_type, $old_amount);
 
-        $type = $transaction->category->type;
-
-        if ($transaction->benefit_wallet) {
-            $benefit_wallet = $transaction->benefit_wallet_id;
+        if ($old_type == config('variable.type.transfer')) {
+            $old_benefit = $transaction->benefit_wallet;
+            $this->transactionRollback($old_benefit, config('variable.type.income'), $old_amount);
         }
 
-        if ($data['wallet_id'] != $transaction->wallet_id) {
+        // Create new transaction
+        $data = $request->all();
+        $new_wallet = $data['wallet_id'];
+        $new_type = $data['type'];
+        $new_amount = $data['amount'];
 
-            $new_wallet = $this->walletRepo->find($data['wallet_id']);
-        
-            switch ($type) {
-                case config('variable.type.income'): {
-                    $wallet->balance -= $transaction->amount;
-                    break;
-                }
-                case config('variable.type.outcome'):
-                case config('variable.type.transfer'): {
-                    $wallet->balance += $transaction->amount;
-                    break;
-                }
-            }
-            $wallet->save();
+        $this->updateWallet($new_wallet, $new_type, $new_amount);
 
-            switch($data['type']) {
-                case config('variable.type.income'): {
-                    $new_wallet->balance += $data['amount'];
-                    $data['benefit_wallet'] = null;
-                    break;
-                }
-                case config('variable.type.outcome'): {
-                    $new_wallet->balance -= $data['amount'];
-                    $data['benefit_wallet'] = null;
-                    break;
-                }
-                case config('variable.type.transfer'): {
-                    $new_wallet->balance -= $data['amount'];
-                    break;
-                }
-            }
-            $new_wallet->save();
-
-            if (isset($data['benefit_wallet'])) {
-                if ($transaction->benefit_wallet) {
-                    $benefit_wallet = $transaction->benefit_wallet_id;
-                    if ($benefit_wallet->id == $data['benefit_wallet']) {
-                        $benefit_wallet->balance -= $transaction->amount;
-                        $benefit_wallet->balance += $data['amount'];
-                        $benefit_wallet->save();
-                    } else {
-                        $benefit_wallet->balance -= $transaction->amount;
-                        $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
-                        $new_benefit_wallet->balance += $data['amount'];
-                        $new_benefit_wallet->save();
-                    }
-                    $benefit_wallet->save();
-                } else {
-                    $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
-                    $new_benefit_wallet->balance += $data['amount'];
-                    $new_benefit_wallet->save();
-                }
-            }
-
+        if ($new_type == config('variable.type.transfer')) {
+            $new_benefit = $data['benefit_wallet'];
+            $this->updateWallet($new_benefit, config('variable.type.income'), $new_amount);
         } else {
-
-            switch ($type) {
-                case config('variable.type.income'): {
-                    $wallet->balance -= $transaction->amount;
-                    break;
-                }
-                case config('variable.type.outcome'):
-                case config('variable.type.transfer'): {
-                    $wallet->balance += $transaction->amount;
-                    break;
-                }
-            }
-
-            switch($data['type']) {
-                case config('variable.type.income'): {
-                    $wallet->balance += $data['amount'];
-                    $data['benefit_wallet'] = null;
-                    break;
-                }
-                case config('variable.type.outcome'): {
-                    $wallet->balance -= $data['amount'];
-                    $data['benefit_wallet'] = null;
-                    break;
-                }
-                case config('variable.type.transfer'): {
-                    $wallet->balance -= $data['amount'];
-                    break;
-                }
-            }
-
-            $wallet->save();
-
-            if (isset($data['benefit_wallet'])) {
-                if ($transaction->benefit_wallet) {
-                    $benefit_wallet = $transaction->benefit_wallet_id;
-                    if ($benefit_wallet->id == $data['benefit_wallet']) {
-                        $benefit_wallet->balance -= $transaction->amount;
-                        $benefit_wallet->balance += $data['amount'];
-                        $benefit_wallet->save();
-                    } else {
-                        $benefit_wallet->balance -= $transaction->amount;
-                        $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
-                        $new_benefit_wallet->balance += $data['amount'];
-                        $new_benefit_wallet->save();
-                    }
-                    $benefit_wallet->save();
-                } else {
-                    $new_benefit_wallet = $this->walletRepo->find($data['benefit_wallet']);
-                    $new_benefit_wallet->balance += $data['amount'];
-                    $new_benefit_wallet->save();
-                }
-            }
-
+            $data['benefit_wallet'] = null;
         }
 
         $this->transactionRepo->update($id, $data);
 
-        return redirect('/transaction/'.$id);
+        return redirect('/wallet/'.$new_wallet);
 
     }
 
@@ -285,84 +188,129 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         $transaction = $this->transactionRepo->find($id);
-        $wallet = $transaction->wallet;
-        $type = $transaction->category->type;
+        $wallet = $transaction->wallet_id;
+        $type = $transaction->type;
+        $amount = $transaction->amount;
 
-        switch ($type) {
-            case config('variable.type.income'): {
-                $wallet->balance = $wallet->balance - $transaction->amount;
-                break;
-            }
-            case config('variable.type.outcome'): {
-                $wallet->balance = $wallet->balance - $transaction->amount;
-                break;
-            }
-            case config('variable.type.transfer'): {
-                $benefit_wallet = $transaction->benefit_wallet_id;
-                $wallet->balance += $transaction->amount;
-                $benefit_wallet->balance = $benefit_wallet->balance - $transaction->amount;
-                $benefit_wallet->save();
-                break;
-            }
+        $this->transactionRollback($wallet, $type, $amount);
+
+        if ($type == config('variable.type.transfer')) {
+            $benefit = $transaction->benefit_wallet;
+            $this->transactionRollback($benefit, config('variable.type.income'), $amount);
         }
-        
-        $wallet->save();
 
         $transaction->delete_flag = 1;
         $transaction->save();
 
-        return redirect('/wallet/'.$wallet->id);
+        return redirect('/wallet/'.$wallet);
     }
 
     public function search (Request $request)
     {
         $wallet = $request->wallet;
         $cat = $request->cat;
-        if ($request->start > $request->end) {
-            $start = $request->end;
-            $end = $request->start;
-        } else {
-            $start = $request->start;
-            $end = $request->end;
-        }
+        $include = $request->include;
+        $start = ($request->start < $request->end) ? $request->start : $request->end;
+        $end = ($start == $request->start) ? $request->end : $request->start;
+        $start = date('Y-m-d H:i:s', strtotime($start));
+        $end = date('Y-m-d H:i:s', strtotime($end.' 24:00:00'));
         $transaction = $this->transactionRepo->query()
-                                            ->where('delete_flag', null)
-                                            ->where('created_at', '>', date('Y-m-d H:i:s', strtotime($start)))
-                                            ->where('created_at', '<', date('Y-m-d H:i:s', strtotime($end.' 24:00:00')));
-
-        $_transaction = $this->transactionRepo->query()
-                                            ->where('delete_flag', null)
-                                            ->where('created_at', '>', date('Y-m-d H:i:s', strtotime($start)))
-                                            ->where('created_at', '<', date('Y-m-d H:i:s', strtotime($end.' 24:00:00')));
+                                    ->where('delete_flag', null)
+                                    ->where('created_at', '>', $start)
+                                    ->where('created_at', '<', $end);
 
         if ($wallet != 'all') {
             $transaction = $transaction->where('wallet_id', $wallet);
-            $_transaction = $_transaction->where('benefit_wallet', $wallet);
+            $_transaction = $this->transactionRepo->query()
+                                    ->where('delete_flag', null)
+                                    ->where('created_at', '>', $start)
+                                    ->where('created_at', '<', $end)
+                                    ->where('benefit_wallet', $wallet);
         }
 
-        $transfer = $this->catRepo->query()
-                                ->where('type', config('variable.type.transfer'))
-                                ->first()
-                                ->id;
-        if ($cat != 'all') {
-            $cat_list[] = $cat;
-            if ($this->catRepo->findChild($cat)) {
-                $cat_list = array_merge($cat_list, $this->catRepo->findChild($cat));
-            }
-            $transaction = $transaction->whereIn('cat_id', $cat_list);
-        }
+        $cat_transfer = $this->catRepo->query()
+                                    ->where('type', config('variable.type.transfer'))
+                                    ->first()
+                                    ->id;
 
-        if ($cat == 'all' || $cat == $transfer) {
-            $_transaction = $_transaction->where('benefit_wallet', '<>', null);
-            $transaction = $transaction->union($_transaction)->get();
+        if ($cat != 'all' && $cat != $cat_transfer) {
+            if ($include != null) {
+                $cat_list[] = $cat;
+                $child = $this->catRepo->findChild($cat);
+                if ($child) {
+                    $cat_list = array_merge($cat_list, $child);
+                }
+                $transaction = $transaction->whereIn('cat_id', $cat_list);
+            } else {
+                $transaction = $transaction->where('cat_id', $cat);
+            }            
+            $transaction = $transaction->get();
         } else {
+            if ($cat == $cat_transfer) {
+                $transaction = $transaction->where('cat_id', $cat_transfer);
+            }
+            if (isset($_transaction)) {
+                $transaction = $transaction->union($_transaction);
+            }
             $transaction = $transaction->get();
         }
-
+        
         $transaction = $transaction->sortBy(function ($item) {
             return $item->created_at;
         });
         
         return response()->json($transaction);
+    }
+
+    /**
+     * Update wallet's balance after a successful transaction
+     * 
+     * @param int $id
+     * @param int $type
+     * @param int $amount
+     * 
+     * @return void
+     */
+    public function updateWallet($id, $type, $amount)
+    {
+        $wallet = $this->walletRepo->find($id);
+        switch ($type) {
+            case config('variable.type.income'): {
+                $wallet->balance += $amount;
+                break;
+            }
+            case config('variable.type.outcome'):
+            case config('variable.type.transfer'): {
+                $wallet->balance -= $amount;
+                break;
+            }
+        }
+        $wallet->save();
+    }
+
+    /**
+     * Rollback transaction on wallet
+     * 
+     * @param int $id
+     * @param int $type
+     * @param int $amount
+     * 
+     * @return void
+     */
+    public function transactionRollback($id, $type, $amount)
+    {
+        $wallet = $this->walletRepo->find($id);
+        switch ($type) {
+            case config('variable.type.income'): {
+                $wallet->balance -= $amount;
+                break;
+            }
+            case config('variable.type.outcome'):
+            case config('variable.type.transfer'): {
+                $wallet->balance += $amount;
+                break;
+            }
+        }
+        $wallet->save();
     }
 }

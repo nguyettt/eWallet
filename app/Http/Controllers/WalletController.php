@@ -78,9 +78,6 @@ class WalletController extends Controller
      */
     public function show($id, Request $request)
     {   
-        $flow['in'] = 0;
-        $flow['out'] = 0;
-
         if ($request->time) {
             $time = $request->time;
             if (!preg_match('/^([0-9]{1,2}\\-)?[0-9]{1,2}\\-[0-9]{4}$/', $time)) {
@@ -99,88 +96,11 @@ class WalletController extends Controller
             $month = date('m');
             $year = date('Y');
         }
-        if ($id == 'undefined') {
-            $deleted = $this->walletRepo->deleted()->pluck('id');
-        } else {
-            $wallet = $this->walletRepo->find($id);
-        }
         
-        if (!isset($day)) {
-
-            $time = str_pad($month, 2, '0', STR_PAD_LEFT).' - '.$year;
-            
-            $transaction = $this->transactionRepo->query()
-                                                ->whereMonth('created_at', $month)
-                                                ->whereYear('created_at', $year)
-                                                ->where('delete_flag', null);
-
-            if (isset($wallet)) {
-                $transaction = $transaction->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
-                                            ->get();
-            } else {
-                $transaction = $transaction->whereIn('wallet_id', $deleted)
-                                            ->get();
-            }
-    
-            $records = array();
-    
-            $date_arr = [];
-    
-            foreach ($transaction as $item) {
-                $date = date('m/d/Y', strtotime($item->created_at));
-                if (!in_array($date, $date_arr)) {
-                    $date_arr[] = $date;
-                    $records[$date]['sum'] = 0;
-                }
-                
-                if ($item->type == config('variable.type.income') || $item->benefit_wallet == $id) {
-                    $flow['in'] += $item->amount;
-                    $records[$date]['sum'] += $item->amount;
-                } else {
-                    $flow['out'] += $item->amount;
-                    $records[$date]['sum'] -= $item->amount;
-                }
-            }
-    
-            if ($month == 1) {
-                $next = '02-'.$year;
-                $prev = '12-'.($year - 1);
-            } elseif ($month > 1 && $month < 12) {
-                $next = str_pad(($month + 1), 2, '0', STR_PAD_LEFT).'-'.$year;
-                $prev = str_pad(($month - 1), 2, '0', STR_PAD_LEFT).'-'.$year;
-            } else {
-                $next = '01-'.($year + 1);
-                $prev = '11-'.$year;
-            }
-
-            return view('wallet.show', compact('wallet', 'flow', 'records', 'time', 'next', 'prev', 'id'));
-
+        if (!isset($day)) {            
+            return $this->monthView($id, $month, $year);
         } else {
-
-            $date = str_pad($day, 2, '0', STR_PAD_LEFT).' - '.str_pad($month, 2, '0', STR_PAD_LEFT).' - '.$year;
-
-            $transaction = $this->transactionRepo->query()
-                                                ->whereDate('created_at', $year.'-'.$month.'-'.$day)
-                                                ->where('delete_flag', null);
-
-            if (isset($wallet)) {
-                $transaction = $transaction->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
-                                            ->get();
-            } else {
-                $transaction = $transaction->whereIn('wallet_id', $deleted)
-                                            ->get();
-            }
-
-            foreach ($transaction as $item) {
-                if ($item->type == config('variable.type.income') || $item->benefit_wallet == $id) {
-                    $flow['in'] += $item->amount;
-                } else {
-                    $flow['out'] -= $item->amount;
-                }
-            }
-
-            return view('wallet.day', compact('transaction', 'flow', 'wallet', 'date', 'id'));
-
+            return $this->dayView($id, $day, $month, $year);
         }
 
     }
@@ -244,6 +164,7 @@ class WalletController extends Controller
 
             $this->walletRepo->update($id, $data);
 
+            // transfer all money left in wallet to 'Main Wallet'
             if ($wallet->balance > 0) {
                 $main_wallet = $this->walletRepo->query()
                                                 ->where('name', 'Main Wallet')
@@ -285,5 +206,115 @@ class WalletController extends Controller
     {
         $wallet = $this->walletRepo->find($request->id);
         return response()->json(number_format($wallet->balance));
+    }
+
+    /**
+     * View monthly overview
+     * 
+     * @param int $id
+     * @param int $month
+     * @param int $year
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function monthView($id, $month, $year)
+    { 
+        $flow['in'] = 0;
+        $flow['out'] = 0;
+
+        if ($id == 'undefined') {
+            $deleted = $this->walletRepo->deleted()->pluck('id');
+        } else {
+            $wallet = $this->walletRepo->find($id);
+        }
+
+        $time = str_pad($month, 2, '0', STR_PAD_LEFT).' - '.$year;
+            
+        $transaction = $this->transactionRepo->query()
+                                            ->whereMonth('created_at', $month)
+                                            ->whereYear('created_at', $year)
+                                            ->where('delete_flag', null);
+
+        if (isset($wallet)) {
+            $benefit_transaction = $this->transactionRepo->query()
+                                                        ->whereMonth('created_at', $month)
+                                                        ->whereYear('created_at', $year)
+                                                        ->where('delete_flag', null)
+                                                        ->where('benefit_wallet', $id);
+            $transaction = $transaction->where('wallet_id', $id)
+                                    ->union($benefit_transaction)
+                                    ->get();            
+        } else {
+            $transaction = $transaction->whereIn('wallet_id', $deleted)
+                                        ->get();
+        }
+
+        $records = array();
+
+        $date_arr = [];
+
+        foreach ($transaction as $item) {
+            $date = date('m/d/Y', strtotime($item->created_at));
+            if (!in_array($date, $date_arr)) {
+                $date_arr[] = $date;
+                $records[$date]['sum'] = 0;
+            }
+            
+            if ($item->type == config('variable.type.income') || $item->benefit_wallet == $id) {
+                $flow['in'] += $item->amount;
+                $records[$date]['sum'] += $item->amount;
+            } else {
+                $flow['out'] += $item->amount;
+                $records[$date]['sum'] -= $item->amount;
+            }
+        }
+
+        return view('wallet.show', compact('wallet', 'flow', 'records', 'time', 'id'));
+    }
+
+    /**
+     * View transactions of specified day
+     * 
+     * @param int $id
+     * @param int $day
+     * @param int $month
+     * @param int $year
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function dayView($id, $day, $month, $year)
+    {
+        $flow['in'] = 0;
+        $flow['out'] = 0;
+        
+        if ($id == 'undefined') {
+            $deleted = $this->walletRepo->deleted()->pluck('id');
+        } else {
+            $wallet = $this->walletRepo->find($id);
+        }
+
+        $date = str_pad($day, 2, '0', STR_PAD_LEFT).' - '.str_pad($month, 2, '0', STR_PAD_LEFT).' - '.$year;
+
+        $transaction = $this->transactionRepo->query()
+                                            ->whereDate('created_at', $year.'-'.$month.'-'.$day)
+                                            ->where('delete_flag', null);
+
+        if (isset($wallet)) {
+            $transaction = $transaction->whereRaw("(wallet_id = {$id} or benefit_wallet = {$id})")
+                                        ->get();
+        } else {
+            $transaction = $transaction->whereIn('wallet_id', $deleted)
+                                        ->get();
+        }
+
+        foreach ($transaction as $item) {
+            if ($item->type == config('variable.type.income') || $item->benefit_wallet == $id) {
+                $flow['in'] += $item->amount;
+            } else {
+                $flow['out'] -= $item->amount;
+            }
+        }
+
+        return view('wallet.day', compact('transaction', 'flow', 'wallet', 'date', 'id'));
     }
 }

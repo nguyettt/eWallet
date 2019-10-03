@@ -42,33 +42,20 @@ class HomeController extends Controller
         $month = date('m');
         $year = date('Y');
 
+        // Calculate inflow, outflow
         $transaction = $this->transactionRepo->query()
-            ->where('delete_flag', null)
-            ->where('type', '<>', 3)
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
-            ->get();
+                            ->where('delete_flag', null)
+                            ->where('benefit_wallet', null)
+                            ->whereMonth('created_at', $month)
+                            ->whereYear('created_at', $year)
+                            ->get();
 
-        foreach ($transaction as $item) {
-            if ($item->type == config('variable.type.income')) {
-                $inflow += $item->amount;
-            } else {
-                $outflow += $item->amount;
-            }
-        }
+        $inflow = $transaction->where('type', config('variable.type.income'))
+                            ->sum('amount');
+        $outflow = $transaction->where('type', config('variable.type.outcome'))
+                            ->sum('amount');
 
-        switch ($month) {
-            case 1:{
-                    $before = ($year - 1) . '-01-01 00:00:00';
-                    break;
-                }
-            default:{
-                    $before = $year . '-' . $month . '-01 00:00:00';
-                    break;
-                }
-        }
-
-        $income = $transaction->where('type', 1);
+        $income = $transaction->where('type', config('variable.type.income'));
         $income = $income->sortByDesc(function ($item) {
             return $item->amount;
         })->values();
@@ -81,7 +68,7 @@ class HomeController extends Controller
             $top_income = $income;
         }
 
-        $outcome = $transaction->where('type', 2);
+        $outcome = $transaction->where('type', config('variable.type.outcome'));
         $outcome = $outcome->sortByDesc(function ($item) {
             return $item->amount;
         })->values();
@@ -94,10 +81,11 @@ class HomeController extends Controller
             $top_outcome = $outcome;
         }
 
+        $before = $year . '-' . $month . '-01 00:00:00';
         $_transaction = $this->transactionRepo->query()
             ->where('created_at', '<', $before)
             ->where('delete_flag', null)
-            ->where('type', '<>', 3)
+            ->where('type', '<>', config('variable.type.transfer'))
             ->get();
         $startingBalance = 0;
 

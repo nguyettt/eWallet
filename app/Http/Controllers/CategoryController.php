@@ -47,7 +47,14 @@ class CategoryController extends Controller
         $cat = $this->catRepo->query()
                             ->where('delete_flag', null)
                             ->get();
-        return view('cat.create', compact('wallet_id', 'cat'));
+        
+        $data = [
+            'income' => config('variable.type.income'),
+            'outcome' => config('variable.type.outcome'),
+        ];
+        $data = json_encode($data);
+
+        return view('cat.create', compact('wallet_id', 'cat', 'data'));
     }
 
     /**
@@ -158,10 +165,8 @@ class CategoryController extends Controller
     {
         $category = $this->catRepo->find($id);
 
-        if ($category->parent_id == 0) {
-            
+        if ($category->parent_id == 0) {            
             return back()->withErrors(['delete' => 'Can not delete default category']);
-
         }
 
         $cat = $this->catRepo->query()
@@ -170,21 +175,13 @@ class CategoryController extends Controller
                             ->get();
 
         if ($category->transaction()->count() == 0 && $cat->count() == 0) {
-
-                $category->delete();
-
+            $category->delete();
         } else {
-
             $data['delete_flag'] = 1;
-
-            $this->catRepo->update($id, $data);
-            
-            foreach ($cat as $item) {
-    
-                $this->destroy($item->id);
-    
+            $this->catRepo->update($id, $data);            
+            foreach ($cat as $item) {    
+                $this->destroy($item->id);    
             }
-
         }
 
         return redirect('/cat');
@@ -207,7 +204,8 @@ class CategoryController extends Controller
      *
      * @param array $array
      * @param integer $parent_id
-     * @return branch
+     * 
+     * @return array $branch
      */
     public function buildTree($array, $parent_id = 0)
     { 
@@ -226,6 +224,14 @@ class CategoryController extends Controller
         return $branch;
     }
 
+    /**
+     * Build html menu
+     * 
+     * @param array $array
+     * @param int $parent
+     * 
+     * @return string $menu
+     */
     public function buildMenu($array, $parent)
     {
         if ($parent != '#') {
@@ -247,47 +253,47 @@ class CategoryController extends Controller
             $hidden = ($item['parent_id'] == 0)?'hidden':'';
             $csrf = csrf_token();
             if (isset($item['child'])) {
-                $menu .= "<li>\n
-                            <div class='d-flex'>\n
-                                <a href='#' class='{$color} h5 mb-1 mt-1' data-toggle='collapse' data-target='#{$item['name']}'>
-                                    <i class='fas fa-circle mr-3 {$color } fa-xs'></i>\n
-                                    ".$item['name']."\n
-                                </a>\n
-                                <form id='frmCatDel_{$item['id']}' method='POST' action='cat/{$item['id']}' style='display:none'>\n
-                                    <input type='hidden' name='_token' value='{$csrf}'>\n
-                                    <input type='hidden' name='_method' value='DELETE'>\n
-                                    <input type='hidden' id='cat_{$item['id']}' value='{$item['name']}'>\n
-                                </form>\n
-                                <a href='cat/{$item['id']}/edit' {$hidden}>\n
-                                    <i class='fas fa-edit ml-5 text-primary fa-fw align-bottom' style='cursor:pointer'></i>\n
-                                </a>\n
-                                <span style='cursor:pointer' onclick='delCat({$item['id']})' {$hidden}>\n
-                                    <i class='fas fa-trash-alt ml-3 text-danger fa-fw align-bottom' style='cursor:pointer'></i>\n
-                                </span>\n
-                                <i class='fas fa-sort-down ml-3 {$color} fa-lg' data-toggle='collapse' data-target='#{$item['name']}' style='cursor:pointer'></i>\n
-                            </div>";
+                $menu .= "<li>\n";
+                $menu .= "<div class='d-flex'>\n";
+                $menu .= "<a href='#' class='{$color} h5 mb-1 mt-1' data-toggle='collapse' data-target='#{$item['name']}'>";
+                $menu .= "<i class='fas fa-circle mr-3 {$color } fa-xs'></i>\n";
+                $menu .= $item['name']."\n";
+                $menu .= "</a>\n";
+                $menu .= "<form id='frmCatDel_{$item['id']}' method='POST' action='cat/{$item['id']}' style='display:none'>\n";
+                $menu .= "<input type='hidden' name='_token' value='{$csrf}'>\n";
+                $menu .= "<input type='hidden' name='_method' value='DELETE'>\n";
+                $menu .= "<input type='hidden' id='cat_{$item['id']}' value='{$item['name']}'>\n";
+                $menu .= "</form>\n";
+                $menu .= "<a href='cat/{$item['id']}/edit' {$hidden}>\n";
+                $menu .= "<i class='fas fa-edit ml-5 text-primary fa-fw align-bottom' style='cursor:pointer'></i>\n";
+                $menu .= "</a>\n";
+                $menu .= "<span style='cursor:pointer' onclick='delCat({$item['id']})' {$hidden}>\n";
+                $menu .= "<i class='fas fa-trash-alt ml-3 text-danger fa-fw align-bottom' style='cursor:pointer'></i>\n";
+                $menu .= "</span>\n";
+                $menu .= "<i class='fas fa-sort-down ml-3 {$color} fa-lg' data-toggle='collapse' data-target='#{$item['name']}' style='cursor:pointer'></i>\n";
+                $menu .= "</div>";
                 $sub = $this->buildMenu($item['child'], $item['name']);
                 $menu .= $sub."</li>\n";
             } else {
-                $menu .= "<li class='mt-1 mb-1'>\n
-                            <div class='d-flex'>\n
-                                <span class='{$color} h5'>\n
-                                    <i class='fas fa-circle mr-3 {$color} fa-xs'></i>\n
-                                    ".$item['name']."\n
-                                </span>\n
-                                <form id='frmCatDel_{$item['id']}' method='POST' action='cat/{$item['id']}' style='display:none'>\n
-                                    <input type='hidden' name='_token' value='{$csrf}'>\n
-                                    <input type='hidden' name='_method' value='DELETE'>\n
-                                    <input type='hidden' id='cat_{$item['id']}' value='{$item['name']}'>\n
-                                </form>\n
-                                <a href='cat/{$item['id']}/edit' {$hidden}>\n
-                                    <i class='fas fa-edit ml-5 text-primary fa-fw' style='cursor:pointer'></i>\n
-                                </a>\n
-                                <span style='cursor:pointer' onclick='delCat({$item['id']})' {$hidden}>\n
-                                    <i class='fas fa-trash-alt ml-3 text-danger fa-fw ' style='cursor:pointer'></i>\n
-                                </span>\n
-                            </div>\n
-                        </li>\n";
+                $menu .= "<li class='mt-1 mb-1'>\n";
+                $menu .= "<div class='d-flex'>\n";
+                $menu .= "<span class='{$color} h5'>\n";
+                $menu .= "<i class='fas fa-circle mr-3 {$color} fa-xs'></i>\n";
+                $menu .= $item['name']."\n";
+                $menu .= "</span>\n";
+                $menu .= "<form id='frmCatDel_{$item['id']}' method='POST' action='cat/{$item['id']}' style='display:none'>\n";
+                $menu .= "<input type='hidden' name='_token' value='{$csrf}'>\n";
+                $menu .= "<input type='hidden' name='_method' value='DELETE'>\n";
+                $menu .= "<input type='hidden' id='cat_{$item['id']}' value='{$item['name']}'>\n";
+                $menu .= "</form>\n";
+                $menu .= "<a href='cat/{$item['id']}/edit' {$hidden}>\n";
+                $menu .= "<i class='fas fa-edit ml-5 text-primary fa-fw' style='cursor:pointer'></i>\n";
+                $menu .= "</a>\n";
+                $menu .= "<span style='cursor:pointer' onclick='delCat({$item['id']})' {$hidden}>\n";
+                $menu .= "<i class='fas fa-trash-alt ml-3 text-danger fa-fw ' style='cursor:pointer'></i>\n";
+                $menu .= "</span>\n";
+                $menu .= "</div>\n";
+                $menu .= "</li>\n";
             }
         }
 

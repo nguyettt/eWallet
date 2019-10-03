@@ -29,6 +29,13 @@ class ExportController extends Controller
         $this->walletRepo = $walletRepo;
     }
 
+    /**
+     * Directly export to excel and send a response to download it
+     *
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         $wallet = $request->wallet;
@@ -77,15 +84,15 @@ class ExportController extends Controller
             ];
 
             switch ($item->type) {
-                case 1: {
+                case config('variable.type.income'): {
                     $array['type'] = 'Income';
                     break;
                 }
-                case 2: {
+                case config('variable.type.outcome'): {
                     $array['type'] = 'Outcome';
                     break;
                 }
-                case 3: {
+                case config('variable.type.transfer'): {
                     $array['type'] = 'Transfer';
                     break;
                 }
@@ -97,10 +104,14 @@ class ExportController extends Controller
         return Excel::download(new TransactionExport($data), 'transaction.xlsx');
     }
 
+    /**
+     * Received json POST from client and generate an excel file, save in 'storage/app/$user_id/'
+     *
+     * @param Request $request
+     * @return void
+     */
     public function exportJSON(Request $request)
     {
-        // $transaction = $request->json()->all();
-
         $transaction = $request->data;
 
         $wallet = $this->walletRepo->getAll();
@@ -119,6 +130,15 @@ class ExportController extends Controller
         return $path = '/export/'.auth()->user()->id.'/'.$filename;
     }
 
+    /**
+     * Download the generated excel file
+     *
+     * @param Request $request
+     * @param int $id
+     * @param string $name
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function download(Request $request, $id, $name)
     {
         if (auth()->user()->id != $id) {
@@ -132,3 +152,4 @@ class ExportController extends Controller
         return response()->download($path)->deleteFileAfterSend();
     }
 }
+ 

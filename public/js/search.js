@@ -21,6 +21,10 @@ function ajaxFilter() {
     var cat = $("#cat_id").val();
     var start = $("#start").val();
     var end = $("#end").val();
+    var include = null;
+    if ($("#include").is(":checked")) {
+        include = '1';
+    }
 
     $.ajax({
         method: "POST",
@@ -29,6 +33,7 @@ function ajaxFilter() {
         data: {
             wallet: wallet,
             cat: cat,
+            include: include,
             start: start,
             end: end
         },
@@ -42,8 +47,8 @@ function ajaxFilter() {
                     var amount = number_format(item.amount);
                     var id = item.id;
 
-                    html += '<div class="col-lg-12 row pr-0">\n';
-                    html += '<a href="transaction/' + id + '" class="transaction row col-lg-12 pr-0 text-dark">\n';
+                    html += '<div class="col-lg-12 row p-0">\n';
+                    html += '<a href="transaction/' + id + '" class="transaction row col-lg-12 p-0 text-dark">\n';
                     html += '<div class="col-lg-8">\n';
                     html += '<div class="col-lg-12">\n';
                     html += '<h6 class="mt-auto mb-auto">' + date + '</h6>\n';
@@ -69,8 +74,10 @@ function ajaxFilter() {
                 html += '<form id="frmExport" method="POST" action="/exportJSON">\n';
                 html += '<input type="hidden" name="_token" value="' + $('meta[name="csrf-token"]').attr('content') + '">\n';
                 html += '<input id="exportData" name="json" type="hidden">\n';
-                html += '</form>';
-                html += '<button id="export" class="btn btn-success float-right">Export</button>\n';
+                html += '</form>\n';
+                html += '<div class="col-lg-12 row justify-content-end">\n';
+                html += '<button id="export" class="btn btn-success">Export</button>\n';
+                html += '</div>';
             }
             
             $("#result").html(html);
