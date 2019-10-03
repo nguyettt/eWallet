@@ -15,9 +15,12 @@
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
-        <div class="card-header row justify-content-center">
-            <div class="row col-lg-12 justify-content-center">
-                <h4>Filter</h4>
+        <div class="card-header row">
+            <div class="col-lg-2 p-0 d-flex justify-content-start">
+                <a href="/dashboard" class="btn btn-success mb-auto mt-auto">Back</a>
+            </div>
+            <div class="col-lg-8 d-flex justify-content-center">
+                <h4 class="mb-auto mt-auto">Filter</h4>
             </div>
             
             <hr style="width: 80%">
@@ -49,6 +52,14 @@
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
+                        <div class="col-lg-2 col-form-label text-lg-right px-0">
+                            <input type="checkbox" id="include" name="ckInclude" value="yes" checked>
+                        </div>
+                        <div class="col-lg-10 d-flex">
+                            <span class="mt-auto mb-auto">Include all sub-categories</span>
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
                         <label for="start" class="col-lg-2 col-form-label text-lg-right px-0">From:</label>
                         <div class="col-lg-10">
                             <input type="date" id="start" name="start" value="" class="form-control"></input>
@@ -70,7 +81,7 @@
         </div>
 
         <div class="card-body">
-            <div id="result" class="col-lg-12">
+            <div id="result" class="col-lg-12 p-0">
                 
             </div>
         </div>

@@ -24,10 +24,10 @@
         <div class="card-header row justify-content-center">
             <div class="col-lg-12 row">
                 <div class="col-lg-2 p-0 d-flex justify-content-start">
-                    <a id="backLink" href="#" class="btn btn-success">Back</a>
+                    <a id="backLink" href="#" class="btn btn-success mt-auto mb-auto">Back</a>
                 </div>
                 <div class="col-lg-8 d-flex justify-content-center">
-                    <h4 class="font-weight-bold">{{ $date }}</h4>
+                    <h4 class="font-weight-bold mt-auto mb-auto">{{ $date }}</h4>
                 </div>
             </div>
             <div class="col-lg-12">
