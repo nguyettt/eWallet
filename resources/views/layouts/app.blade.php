@@ -39,7 +39,7 @@
 </head>
 
 <body>
-    <div class="pt-5" id="app">
+    <div class="py-5" id="app">
         @guest
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm fixed-top">
             <div class="container">
@@ -80,13 +80,13 @@
         @auth
         @if (auth()->user()->hasVerifiedEmail())
             @include('layouts.nav')
-            <div class="page-content p-5 fixed-top" id="content">
+            <div class="page-content py-5 px-0 fixed-top fixed" id="content">
                 <!-- Toggle button -->
-                <button id="sidebarCollapse" type="button" class="btn btn-light bg-white rounded-pill shadow-sm px-4 mb-4"><i
-                        class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Menu</small></button>
+                <button id="sidebarCollapse" type="button" class="btn btn-light bg-white mt-5 px-2"><i
+                        class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold vertical-text">Menu</small></button>
             </div>
-            <div class="row page-content p-5 fixed-bottom justify-content-center" id="content" 
-                @if (!in_array(Route::currentRouteName(), ['home', 'wallet.show', 'cat.show', 'cat.index'])) 
+            <div class="row page-content p-5 fixed-bottom justify-content-center fixed" id="content" 
+                @if (!in_array(Route::currentRouteName(), ['home', 'wallet.show', 'cat.show', 'cat.index', 'transaction.index'])) 
                     style="display: none" 
                 @endif
             >      
@@ -95,7 +95,7 @@
                     cat/create 
                 @else 
                     transaction/create
-                @endif " id="add" class="btn btn-primary btn-circle" data-toggle="tooltip" data-placement="top" title="Add new 
+                @endif " id="add_button" class="btn btn-primary btn-circle" data-toggle="tooltip" data-placement="top" title="Add new 
                 @if (Route::currentRouteName() == 'cat.index')
                     category
                 @else

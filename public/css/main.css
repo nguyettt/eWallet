@@ -9,6 +9,15 @@
     transition: all 0.4s;
 }
 
+#sidebarCollapse {
+    pointer-events: auto;
+    width: 2rem;
+}
+
+.vertical-text {
+    word-wrap: break-word;
+}
+
 .page-content {
     width: calc(100% - 20rem);
     margin-left: 20rem;
@@ -99,4 +108,12 @@ body {
 #pie_chart {
     display: block;
     margin: 0 auto !important;
+}
+
+.fixed {
+    pointer-events: none;
+}
+
+#add_button {
+    pointer-events: auto;
 }
