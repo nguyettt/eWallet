@@ -9,7 +9,6 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         $(function () {
-
             $("#calendar").click(function (e) {
                 $("#datepicker").datepicker({
                     dateFormat: "dd-mm-yy"
@@ -25,6 +24,7 @@
             });
         })  
     </script>
+    <script src="js/wallet.js"></script>
 @endpush
 
 @section('title')
@@ -35,18 +35,24 @@
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
         @if (isset($wallet))
-        <div class="card-body">
-            <h3>Balance: {{ number_format($wallet->balance) }} đ</h3>
+        <div class="card-body row">
+            <div class="col-lg-2 p-0 d-flex justify-content-start">
+                <a href="/dashboard" class="btn btn-success mt-auto mb-auto">Back</a>
+            </div>
+            <div class="col-lg-8 d-flex justify-content-center">
+                <h3 class="mt-auto mb-auto">Balance: {{ number_format($wallet->balance) }} đ</h3>
+            </div>
         </div>
         @endif
 
         <div class="card-header row justify-content-center">
+            <input type="hidden" value="{{ $wallet->id }}" id="wallet_id">
             <div class="row col-lg-12 justify-content-between">
-                <a href="wallet/{{ $id }}?time={{ $prev }}">
+                <a href="" id="prevMonth">
                     <i class="fas fa-arrow-left fa-fw text-dark"></i>
                 </a>
-                <h4 class="font-weight-bold">{{ $time }}</h4>
-                <a href="wallet/{{ $id }}?time={{ $next }}">
+                <h4 class="font-weight-bold" id="time">{{ $time }}</h4>
+                <a href="" id="nextMonth">
                     <i class="fas fa-arrow-right fa-fw text-dark"></i>
                 </a>
             </div>
