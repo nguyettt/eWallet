@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @push('script')
+<script>
+var data = {!! $data !!};
+</script>
 <script src="js/category.js"></script>
 @if ($errors->has('restore'))
     <script>
@@ -11,37 +14,6 @@
         })
     </script>
 @endif
-<script>
-function type_select () {
-    type = $("#type").val();
-    var income = {{ config('variable.type.income') }};
-    var outcome = {{ config('variable.type.outcome') }};
-    var transfer = {{ config('variable.type.transfer') }};
-    switch (type) {
-        case ""+income: {
-            $("." + income).css("display", "block");
-            $("." + outcome).css("display", "none");
-            // $("." + transfer).css("display", "none");
-            $("#parent_id").val("");
-            break;
-        }
-        case ""+outcome: {
-            $("." + income).css("display", "none");
-            $("." + outcome).css("display", "block");
-            // $("." + transfer).css("display", "none");
-            $("#parent_id").val("");
-            break;
-        }
-        default: {
-            $("." + income).css("display", "none");
-            $("." + outcome).css("display", "none");
-            // $("." + transfer).css("display", "none");
-            $("#parent_id").val("");
-            break;
-        }
-    }
-}
-</script>
 @endpush
 
 @section('title')
@@ -51,8 +23,13 @@ function type_select () {
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
-        <div class="card-header row justify-content-center">
-            <h5 class="font-weight-bold">{{ __('New Category') }}</h5>
+        <div class="card-header row">
+            <div class="col-lg-2 p-0 d-flex justify-content-start">
+                <a href="/cat" class="btn btn-success mt-auto mb-auto">Back</a>
+            </div>
+            <div class="col-lg-8 d-flex justify-content-center">
+                <h5 class="font-weight-bold mt-auto mb-auto">{{ __('New Category') }}</h5>
+            </div>
         </div>
 
         <div class="card-body">

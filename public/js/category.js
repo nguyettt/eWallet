@@ -1,16 +1,34 @@
 $(document).ready(function () {
     type_select();
-
     $("#type").change(function () {
         type_select();
     })
 })
 
-
-
-function delCat(id) {
-    var name = $("#cat_" + id).val();
-    if (confirm("Are you sure to delete " + name + " and it's sub categories?")) {
-        $("#frmCatDel_" + id).submit();
+function type_select () {
+    type = $("#type").val();
+    var income = data['income'];
+    var outcome = data['outcome'];
+    switch (type) {
+        case ""+income: {
+            $("." + income).css("display", "block");
+            $("." + outcome).css("display", "none");
+            $("#parent_id").val("");
+            break;
+        }
+        case ""+outcome: {
+            $("." + income).css("display", "none");
+            $("." + outcome).css("display", "block");
+            $("#parent_id").val("");
+            break;
+        }
+        default: {
+            $("." + income).css("display", "none");
+            $("." + outcome).css("display", "none");
+            $("#parent_id").val("");
+            break;
+        }
     }
 }
+
+

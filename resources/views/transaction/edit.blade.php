@@ -2,50 +2,7 @@
 
 @push('script')
 <script>
-function type_select () {
-    var type = $("#type").val();
-    var income = {{ config('variable.type.income') }};
-    var outcome = {{ config('variable.type.outcome') }};
-    var transfer = {{ config('variable.type.transfer') }};
-    switch (type) {
-        case ''+income: {
-            $("."+income).css("display", "block");
-            $("."+outcome).css("display", "none");
-            $("."+transfer).css("display", "none");
-            $(".benefit_wallet_block").css("display", "none");
-            $(".cat").css("display", "flex");
-            $("#cat_id").val("");
-            break;
-        }
-        case ''+outcome: {
-            $("."+income).css("display", "none");
-            $("."+outcome).css("display", "block");
-            $("."+transfer).css("display", "none");
-            $(".benefit_wallet_block").css("display", "none");
-            $(".cat").css("display", "flex");
-            $("#cat_id").val("");
-            break;
-        }
-        case ''+transfer: {
-            $("."+income).css("display", "none");
-            $("."+outcome).css("display", "none");
-            $("."+transfer).css("display", "block");
-            $(".benefit_wallet_block").css("display", "flex");
-            $(".cat").css("display", "none");
-            $("#cat_id").val($(".3").val());
-            break;
-        }
-        default: {
-            $("."+income).css("display", "none");
-            $("."+outcome).css("display", "none");
-            $("."+transfer).css("display", "none");
-            $(".benefit_wallet_block").css("display", "none");
-            $(".cat").css("display", "flex");
-            $("#cat_id").val("");
-            break;
-        }
-    }
-}
+var data = {!! $data !!}
 </script>
 <script src="js/transaction.js"></script>
 @endpush
@@ -119,7 +76,7 @@ function type_select () {
                     </div>
                 </div>
 
-                <div class="form-group row">
+                <div class="form-group row cat">
                     <label for="cat_id" class="col-md-4 col-form-label text-md-right">{{ __('Category') }}</label>
 
                     <div class="col-md-6">
@@ -191,7 +148,7 @@ function type_select () {
 
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4">
-                        <button id="btnSubmit" type="button" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary">
                             {{ __('Save') }}
                         </button>
                     </div>

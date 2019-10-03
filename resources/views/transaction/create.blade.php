@@ -2,50 +2,7 @@
 
 @push('script')
 <script>
-function type_select () {
-    var type = $("#type").val();
-    var income = {{ config('variable.type.income') }};
-    var outcome = {{ config('variable.type.outcome') }};
-    var transfer = {{ config('variable.type.transfer') }};
-    switch (type) {
-        case ''+income: {
-            $("."+income).css("display", "block");
-            $("."+outcome).css("display", "none");
-            $("."+transfer).css("display", "none");
-            $(".benefit_wallet_block").css("display", "none");
-            $(".cat").css("display", "flex");
-            $("#cat_id").val("");
-            break;
-        }
-        case ''+outcome: {
-            $("."+income).css("display", "none");
-            $("."+outcome).css("display", "block");
-            $("."+transfer).css("display", "none");
-            $(".benefit_wallet_block").css("display", "none");
-            $(".cat").css("display", "flex");
-            $("#cat_id").val("");
-            break;
-        }
-        case ''+transfer: {
-            $("."+income).css("display", "none");
-            $("."+outcome).css("display", "none");
-            $("."+transfer).css("display", "block");
-            $(".benefit_wallet_block").css("display", "flex");
-            $(".cat").css("display", "none");
-            $("#cat_id").val($(".3").val());
-            break;
-        }
-        default: {
-            $("."+income).css("display", "none");
-            $("."+outcome).css("display", "none");
-            $("."+transfer).css("display", "none");
-            $(".benefit_wallet_block").css("display", "none");
-            $(".cat").css("display", "flex");
-            $("#cat_id").val("");
-            break;
-        }
-    }
-}
+var data = {!! $data !!}
 </script>
 <script src="js/transaction.js"></script>
 @endpush
@@ -57,8 +14,13 @@ function type_select () {
 @section('content')
 <div class="container">
     <div class="card bg-light p-5 col-lg-8 offset-lg-2">
-        <div class="card-header row justify-content-center">
-            <h5 class="font-weight-bold">{{ __('New Transaction') }}</h5>
+        <div class="card-header row">
+            <div class="col-lg-2 justify-content-start">
+                <a href="{{ url()->previous() }}" class="btn btn-success mb-auto mt-auto">Back</a>
+            </div>
+            <div class="col-lg-8 d-flex justify-content-center">
+                <h5 class="font-weight-bold mb-auto mt-auto">{{ __('New Transaction') }}</h5>
+            </div>
         </div>
 
         <div class="card-body">
@@ -184,7 +146,7 @@ function type_select () {
 
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4">
-                        <button id="btnSubmit" type="button" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary">
                             {{ __('Create') }}
                         </button>
                     </div>

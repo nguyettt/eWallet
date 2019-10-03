@@ -1,6 +1,8 @@
 $(function () {
     type_select();
-    getBalance();
+    if ($("#wallet_id").val() != null) {
+        getBalance();
+    }
     number_format();
 
     $("#type").change(function () {
@@ -12,13 +14,13 @@ $(function () {
         getBalance();
     })
 
-    $("#btnSubmit").click(function () {
+    $("#frmTransaction").submit(function () {
         var amount = $("#amount").val();
         if (amount != "") {
-            amount = amount.replace(/\,/g, '');
+            amount = amount.replace(/\,/g, "");
         }
         $("#amount").val(amount);
-        $("#frmTransaction").submit();
+        return true;
     })
 })
 
@@ -42,4 +44,49 @@ function number_format() {
         num = parseInt(num).toLocaleString('en');
     }
     $("#amount").val(num);
+}
+
+function type_select () {
+    var type = $("#type").val();
+    var income = data['income'];
+    var outcome = data['outcome'];
+    var transfer = data['transfer'];
+    switch (type) {
+        case ''+income: {
+            $("."+income).css("display", "block");
+            $("."+outcome).css("display", "none");
+            $("."+transfer).css("display", "none");
+            $(".benefit_wallet_block").css("display", "none");
+            $(".cat").css("display", "flex");
+            $("#cat_id").val("");
+            break;
+        }
+        case ''+outcome: {
+            $("."+income).css("display", "none");
+            $("."+outcome).css("display", "block");
+            $("."+transfer).css("display", "none");
+            $(".benefit_wallet_block").css("display", "none");
+            $(".cat").css("display", "flex");
+            $("#cat_id").val("");
+            break;
+        }
+        case ''+transfer: {
+            $("."+income).css("display", "none");
+            $("."+outcome).css("display", "none");
+            $("."+transfer).css("display", "block");
+            $(".benefit_wallet_block").css("display", "flex");
+            $(".cat").css("display", "none");
+            $("#cat_id").val($("."+transfer).val());
+            break;
+        }
+        default: {
+            $("."+income).css("display", "none");
+            $("."+outcome).css("display", "none");
+            $("."+transfer).css("display", "none");
+            $(".benefit_wallet_block").css("display", "none");
+            $(".cat").css("display", "flex");
+            $("#cat_id").val("");
+            break;
+        }
+    }
 }
