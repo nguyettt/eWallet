@@ -21,7 +21,8 @@ class HomeController extends Controller
         WalletEloquentRepository $walletRepo,
         CategoryEloquentRepository $catRepo,
         TransactionEloquentRepository $transactionRepo
-    ) {
+    )
+    {
         $this->walletRepo = $walletRepo;
         $this->catRepo = $catRepo;
         $this->transactionRepo = $transactionRepo;
@@ -42,7 +43,6 @@ class HomeController extends Controller
         $month = date('m');
         $year = date('Y');
 
-        // Calculate inflow, outflow
         $transaction = $this->transactionRepo->query()
                             ->where('delete_flag', null)
                             ->where('benefit_wallet', null)
@@ -50,46 +50,82 @@ class HomeController extends Controller
                             ->whereYear('created_at', $year)
                             ->get();
 
-        $inflow = $transaction->where('type', config('variable.type.income'))
-                            ->sum('amount');
-        $outflow = $transaction->where('type', config('variable.type.outcome'))
-                            ->sum('amount');
+        // Calculate inflow, outflow
+        $flow = $this->flowCalculate($month, $year, $transaction);
+        $inflow = $flow['in'];
+        $outflow = $flow['out'];
 
-        $income = $transaction->where('type', config('variable.type.income'));
-        $income = $income->sortByDesc(function ($item) {
+        // Select top transaction
+        $top_income = $this->topTransaction($month, $year, $transaction, config('variable.type.income'));
+        $top_outcome = $this->topTransaction($month, $year, $transaction, config('variable.type.outcome'));
+
+        $startingBalance = $this->startingBalance($month, $year);
+        return view('dashboard.dashboard', compact('balance', 'startingBalance', 'inflow', 'outflow', 'top_income', 'top_outcome'));
+    }
+
+    /**
+     * Calculate inflow, outflow
+     * 
+     * @param int $month
+     * @param int $year
+     * @param Collection $transaction
+     * 
+     * @return array $flow
+     */
+    public function flowCalculate($month, $year, $transaction)
+    {
+        $flow['in'] = $transaction->where('type', config('variable.type.income'))
+                            ->sum('amount');
+        $flow['out'] = $transaction->where('type', config('variable.type.outcome'))
+                            ->sum('amount');
+        return $flow;
+    }
+
+    /**
+     * Return top transaction of the month
+     * 
+     * @param int $month
+     * @param int $year
+     * @param Collection $transaction
+     * @param int type
+     * 
+     * @return array $result
+     */
+    public function topTransaction($month, $year, $transaction, $type)
+    {
+        $filtered = $transaction->where('type', $type);
+        $filtered = $filtered->sortByDesc(function ($item) {
             return $item->amount;
         })->values();
-
-        if (count($income) >= 5) {
+        if (count($filtered) >= 5) {
             for ($i = 0; $i < 5; $i++) {
-                $top_income[] = $income[$i];
+                $result[] = $filtered[$i];
             }
         } else {
-            $top_income = $income;
+            $result = $filtered;
         }
+        return $result;
+    }
 
-        $outcome = $transaction->where('type', config('variable.type.outcome'));
-        $outcome = $outcome->sortByDesc(function ($item) {
-            return $item->amount;
-        })->values();
-
-        if (count($outcome) >= 5) {
-            for ($i = 0; $i < 5; $i++) {
-                $top_outcome[] = $outcome[$i];
-            }
-        } else {
-            $top_outcome = $outcome;
-        }
-
+    /**
+     * Calculate starting balance
+     * 
+     * @param int $month
+     * @param int $year
+     * 
+     * @return int $startingBalance
+     */
+    public function startingBalance($month, $year)
+    {
         $before = $year . '-' . $month . '-01 00:00:00';
-        $_transaction = $this->transactionRepo->query()
+        $transaction = $this->transactionRepo->query()
             ->where('created_at', '<', $before)
             ->where('delete_flag', null)
             ->where('type', '<>', config('variable.type.transfer'))
             ->get();
         $startingBalance = 0;
 
-        foreach ($_transaction as $item) {
+        foreach ($transaction as $item) {
             if ($item->type == config('variable.type.income')) {
                 $startingBalance += $item->amount;
             } else {
@@ -97,6 +133,6 @@ class HomeController extends Controller
             }
         }
 
-        return view('dashboard.dashboard', compact('balance', 'startingBalance', 'inflow', 'outflow', 'top_income', 'top_outcome'));
+        return $startingBalance;
     }
 }
