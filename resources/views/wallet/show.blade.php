@@ -46,7 +46,7 @@
         @endif
 
         <div class="card-header row justify-content-center">
-            <input type="hidden" value="{{ $wallet->id }}" id="wallet_id">
+            <input type="hidden" value="{{ $id }}" id="wallet_id">
             <div class="row col-lg-12 justify-content-between">
                 <a href="" id="prevMonth">
                     <i class="fas fa-arrow-left fa-fw text-dark"></i>
