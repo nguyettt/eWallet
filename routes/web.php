@@ -72,11 +72,11 @@ Route::middleware('verified')->group(function () {
         Route::post('/search', 'TransactionController@search')->name('search');
     });
 
-    Route::post('/export', 'ExportController@export')->name('export');
-    
-    Route::post('/exportJSON', 'ExportController@exportJSON')->name('exportJSON');
-
-    Route::get('/export/{id}/{name}', 'ExportController@download')->name('download');
+    Route::group(['prefix' => 'export', 'as' => 'export.'], function () {
+        Route::post('/monthly', 'ExportController@exportMonthlyReport')->name('export');    
+        Route::post('/ajax', 'ExportController@ajax')->name('exportJSON');
+        Route::get('/download/{id}/{name}', 'ExportController@download')->name('download');
+    });
 
     Route::get('/test', 'TestController@test')->name('test');
 

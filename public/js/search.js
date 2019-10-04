@@ -71,7 +71,7 @@ function ajaxFilter() {
                     html += '<hr style="width:100%">\n';
                 })
 
-                html += '<form id="frmExport" method="POST" action="/exportJSON">\n';
+                html += '<form id="frmExport" method="POST" action="/export/ajax">\n';
                 html += '<input type="hidden" name="_token" value="' + $('meta[name="csrf-token"]').attr('content') + '">\n';
                 html += '<input id="exportData" name="json" type="hidden">\n';
                 html += '</form>\n';
@@ -86,7 +86,7 @@ function ajaxFilter() {
                 e.preventDefault();
                 $.ajax({
                     method: "POST",
-                    url: "/exportJSON",
+                    url: "/export/ajax",
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: {
                         data: data,

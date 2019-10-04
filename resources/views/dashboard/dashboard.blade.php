@@ -163,11 +163,8 @@
         <div class="col-lg-12">
             <div class="row col-lg-12">
                 <div class="col-lg-6">
-                    <form id="frmExport" method="POST" action="/export">
+                    <form id="frmExport" method="POST" action="/export/monthly">
                         @csrf
-                        <input type="hidden" name="time" value="{{ date('m-Y') }}"></input>
-                        <input type="hidden" name="wallet" value="all"></input>
-                        <input type="hidden" name="cat" value="all"></input>
                     </form>
                 </div>
                 <div class="col-lg-6">

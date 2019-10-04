@@ -36,38 +36,14 @@ class ExportController extends Controller
      * 
      * @return \Illuminate\Http\Response
      */
-    public function export(Request $request)
+    public function exportMonthlyReport(Request $request)
     {
-        $wallet = $request->wallet;
-        $cat = $request->cat;
-
-        if (isset($request->time)) {
-            $time = $request->time;
-            $month = explode('-', $time)[0];
-            $year = explode('-', $time)[1];
-            $start = $year.'-'.$month.'-01 00:00:00';
-            if ($month == 12) {
-                $end = ($year + 1).'-01-01 00:00:00';
-            } else {
-                $end = $year.'-'.($month + 1).'-01 00:00:00';
-            }
-        } else {
-            $start = $request->start;
-            $end = $request->end;
-        }
-
+        $month = date('m');
+        $year = date('Y');
         $transaction = $this->transactionRepo->query()
-                                            ->whereBetween('created_at', [$start, $end]);
-
-        if ($wallet != 'all') {
-            $transaction = $transaction->where('wallet_id', $wallet);
-        }
-
-        if ($cat != 'all') {
-            $transaction = $transaction->where('cat_id', $cat);
-        }
-
-        $transaction = $transaction->get();
+                                            ->whereMonth('created_at', $month)
+                                            ->whereYear('created_at', $year)
+                                            ->get();
         $data = [];
 
         foreach ($transaction as $item) {
@@ -101,7 +77,7 @@ class ExportController extends Controller
             $data[] = $array;
         }
 
-        return Excel::download(new TransactionExport($data), 'transaction.xlsx');
+        return Excel::download(new TransactionExport($data), $month.'-'.$year.' report.xlsx');
     }
 
     /**
@@ -110,7 +86,7 @@ class ExportController extends Controller
      * @param Request $request
      * @return void
      */
-    public function exportJSON(Request $request)
+    public function ajax(Request $request)
     {
         $transaction = $request->data;
 
@@ -141,7 +117,7 @@ class ExportController extends Controller
 
         Excel::store(new TransactionExport($transaction), $filename);
 
-        return $path = '/export/'.auth()->user()->id.'/'.$filename;
+        return $path = '/export/download/'.auth()->user()->id.'/'.$filename;
     }
 
     /**
@@ -160,7 +136,7 @@ class ExportController extends Controller
         }
 
         $url = $request->path();
-        $url = explode('/', $url)[2];
+        $url = explode('/', $url)[3];
         $path = base_path().'/storage/app/'.$url;
 
         return response()->download($path)->deleteFileAfterSend();
