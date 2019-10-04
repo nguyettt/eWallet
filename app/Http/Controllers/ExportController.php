@@ -121,6 +121,20 @@ class ExportController extends Controller
         foreach ($transaction as $key => $item) {
             $transaction[$key]['wallet'] = $wallet->where('id', $item['wallet_id'])->first()->name;
             $transaction[$key]['cat'] = $cat->where('id', $item['cat_id'])->first()->name;
+            switch ($item['type']) {
+                case config('variable.type.income'): {
+                    $transaction[$key]['type'] = 'Income';
+                    break;
+                }
+                case config('variable.type.outcome'): {
+                    $transaction[$key]['type'] = 'Outcome';
+                    break;
+                }
+                case config('variable.type.transfer'): {
+                    $transaction[$key]['type'] = 'Transfer';
+                    break;
+                }
+            }
         }
 
         $filename = 'transaction-'.date('Ymd').'-'.time().'.xlsx';
